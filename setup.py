@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009-2013 Pierre Raybaut
+# Copyright © 2009-2015 Pierre Raybaut
 # Licensed under the terms of the MIT License
 # (see formlayout.py for details)
 
@@ -24,7 +24,20 @@ from distutils.core import setup
 setup(name = LIBNAME,
       version = __version__,
       description = 'Python module for creating Qt form dialogs and widgets',
-      long_description = '',
+      long_description = """\
+With ``formlayout``, generating a form is very easy.
+
+Here is a simple example (more are included in source package)::
+
+    from formlayout import fedit
+    datalist = [('Name', 'Paul'),
+                ('Age', 30),
+                ('Sex', [0, 'Male', 'Female']),
+                ('Size', 12.1),
+                ('Eyes', 'green'),
+                ('Married', True),
+                ]
+    fedit(datalist, title="Describe yourself", comment="This is just an <b>example</b>.")""",
       author = "Pierre Raybaut",
       author_email = 'pierre.raybaut@gmail.com',
       url = 'https://github.com/PierreRaybaut/%s' % LIBNAME,
