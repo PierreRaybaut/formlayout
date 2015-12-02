@@ -27,6 +27,10 @@ install:
   - ./continuous_integration/travis/install.sh;
   - export PATH="$HOME/miniconda/bin:$PATH";
 
+before_script:
+ - chmod +x ./continuous_integration/travis/build_test.sh
+ - chmod +x ./continuous_integration/travis/main_test.sh
+
 script:
   - ./continuous_integration/travis/build_test.sh
   - ./continuous_integration/travis/main_test.sh
