@@ -1,7 +1,7 @@
 # https://travis-ci.org/PierreRaybaut/formlayout
 
 language: python
-sudo: false
+sudo: true
 
 env:
   global:
