@@ -646,9 +646,19 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
     """
     # Create a QApplication instance if no instance currently exists
     # (e.g. if the module is used directly from the interpreter)
-    if QApplication.startingUp():
+    # Create a QApplication instance if no instance currently exists
+    # (e.g. if the module is used directly from the interpreter)
+    test_travis = os.environ.get('TEST_CI_WIDGETS', None)
+    if test_travis is not None:
+        app = QApplication.instance()
+        if app is None:
+            app = QApplication([])
+        timer = QTimer(app)
+        timer.timeout.connect(app.quit)
+        timer.start(1000)
+    elif QApplication.startingUp():
         _app = QApplication([])
-        
+
     dialog = FormDialog(data, title, comment, icon, parent, apply)
     if dialog.exec_():
         return dialog.get()
