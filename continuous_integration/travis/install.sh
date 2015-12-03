@@ -74,7 +74,7 @@ install_pyside()
 install_pip()
 {
     if [ "$USE_QT_API" = "PyQt5" ]; then
-        conda install pyqt5;
+        conda install -c https://conda.anaconda.org/mmcauliffe pyqt5;
     elif [ "$USE_QT_API" = "PyQt4" ]; then
         conda install pyqt;
     elif [ "$USE_QT_API" = "PySide" ]; then
