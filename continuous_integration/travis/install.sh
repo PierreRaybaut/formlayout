@@ -52,6 +52,8 @@ install_conda()
         conda install conda-build;
         conda create -q -n test-environment python=$PY_VERSION;
     fi
+    
+    conda config --add channels dsdale24
 
 }
 
