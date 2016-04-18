@@ -646,8 +646,6 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
     """
     # Create a QApplication instance if no instance currently exists
     # (e.g. if the module is used directly from the interpreter)
-    # Create a QApplication instance if no instance currently exists
-    # (e.g. if the module is used directly from the interpreter)
     test_travis = os.environ.get('TEST_CI_WIDGETS', None)
     if test_travis is not None:
         app = QApplication.instance()
