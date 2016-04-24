@@ -254,8 +254,9 @@ class ColorLayout(QHBoxLayout):
 
 class FileLayout(QHBoxLayout):
     """File-specialized QLineEdit layout"""
-    def __init__(self, parent=None):
+    def __init__(self, value, parent=None):
         QHBoxLayout.__init__(self)
+        self.value = value
         self.lineedit = QLineEdit('', parent)
         self.addWidget(self.lineedit)
         self.filebtn = QPushButton('Browse')
@@ -263,8 +264,11 @@ class FileLayout(QHBoxLayout):
         self.addWidget(self.filebtn)
 
     def getfile(self):
-        filename = QFileDialog.getOpenFileName(None, 'Select file')
-        self.lineedit.setText(filename)
+        if self.value == 'file':
+            name = QFileDialog.getOpenFileName(None, 'Select file')
+        elif self.value == 'dir':
+            name = QFileDialog.getExistingDirectory(None, 'Select directory')
+        self.lineedit.setText(name)
 
     def text(self):
         return self.lineedit.text()
@@ -387,8 +391,8 @@ class FormWidget(QWidget):
                 field = FontLayout(value, self)
             elif text_to_qcolor(value).isValid():
                 field = ColorLayout(QColor(value), self)
-            elif value == 'file':
-                field = FileLayout(self)
+            elif value in ['file', 'dir']:
+                field = FileLayout(value, self)
             elif is_text_string(value):
                 if '\n' in value:
                     for linesep in (os.linesep, '\n'):
