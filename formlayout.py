@@ -395,7 +395,7 @@ class FormWidget(QWidget):
                     print("Warning: '%s' index is invalid (label: "\
                           "%s, value: %s)" % (selindex, label, value),
                           file=STDERR)
-                    selindex = 0
+                    selindex = -1
                 field.setCurrentIndex(selindex)
             elif isinstance(value, bool):
                 field = QCheckBox(self)
