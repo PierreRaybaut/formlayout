@@ -380,6 +380,8 @@ class FormWidget(QWidget):
             elif isinstance(value, (list, tuple)):
                 value = list(value)  # in case this is a tuple
                 selindex = value.pop(0)
+                if isinstance(selindex, int):
+                    selindex = selindex - 1
                 field = QComboBox(self)
                 if isinstance(value[0], (list, tuple)):
                     keys = [ key for key, _val in value ]
@@ -445,7 +447,7 @@ class FormWidget(QWidget):
                 index = int(field.currentIndex())
                 if isinstance(value[0], int):
                     # Return an int index, if initialization was an int
-                    value = index
+                    value = index + 1
                 else:
                     value = value[index+1]
                     if isinstance(value, (list, tuple)):
