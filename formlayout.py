@@ -378,7 +378,7 @@ class FormWidget(QWidget):
                 else:
                     field = QLineEdit(value, self)
             elif isinstance(value, (list, tuple)):
-                value = list(value)  # in case this is a tuple
+                value = list(value)  # always needed to protect self.data
                 selindex = value.pop(0)
                 field = QComboBox(self)
                 if isinstance(value[0], (list, tuple)):
