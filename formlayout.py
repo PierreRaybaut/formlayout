@@ -264,8 +264,9 @@ class FileLayout(QHBoxLayout):
         self.addWidget(self.filebtn)
 
     def getfile(self):
-        if self.value == 'file':
-            name = QFileDialog.getOpenFileName(None, 'Select file')
+        if self.value.startswith('file'):
+            name = QFileDialog.getOpenFileName(None, 'Select file',
+                                               filter=self.value[5:])
         elif self.value == 'dir':
             name = QFileDialog.getExistingDirectory(None, 'Select directory')
         self.lineedit.setText(name)
@@ -391,10 +392,10 @@ class FormWidget(QWidget):
                 field = FontLayout(value, self)
             elif text_to_qcolor(value).isValid():
                 field = ColorLayout(QColor(value), self)
-            elif value in ['file', 'dir']:
-                field = FileLayout(value, self)
             elif is_text_string(value):
-                if '\n' in value:
+                if value in ['file', 'dir'] or value.startswith('file:'):
+                    field = FileLayout(value, self)
+                elif '\n' in value:
                     for linesep in (os.linesep, '\n'):
                         if linesep in value:
                             value = value.replace(linesep, u("\u2029"))
