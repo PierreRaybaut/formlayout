@@ -357,7 +357,10 @@ class FormWidget(QWidget):
                 print("value:", value)
             if label is None and value is None:
                 # Separator: (None, None)
-                self.formlayout.addRow(QLabel(" "), QLabel(" "))
+                separator = QFrame()
+                separator.setFrameShape(QFrame.HLine)
+                separator.setFrameShadow(QFrame.Sunken)
+                self.formlayout.addRow(separator)
                 self.widgets.append(None)
                 continue
             elif label is None:
