@@ -37,7 +37,12 @@ Here is a simple example (more are included in source package)::
                 ('Eyes', 'green'),
                 ('Married', True),
                 ]
-    fedit(datalist, title="Describe yourself", comment="This is just an <b>example</b>.")""",
+    fedit(datalist, title="Describe yourself", comment="This is just an <b>example</b>.")
+
+This shows the following dialog box:
+
+.. image:: http://static.freedownloadmanager.org/s/1182/1182265_2.jpg
+""",
       author = "Pierre Raybaut",
       author_email = 'pierre.raybaut@gmail.com',
       url = 'https://github.com/PierreRaybaut/%s' % LIBNAME,
