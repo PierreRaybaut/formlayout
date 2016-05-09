@@ -686,6 +686,10 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
         timer.start(1000)
     elif QApplication.startingUp():
         _app = QApplication([])
+        translator_qt = QTranslator()
+        translator_qt.load('qt_' + QLocale.system().name(),
+                           QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+        _app.installTranslator(translator_qt)
 
     dialog = FormDialog(data, title, comment, icon, parent, apply)
     if dialog.exec_():
