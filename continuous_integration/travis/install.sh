@@ -7,36 +7,17 @@ PY_VERSION=$TRAVIS_PYTHON_VERSION
 #==============================================================================
 # Utility functions
 #==============================================================================
-download_code()
-{
-    PR=$TRAVIS_PULL_REQUEST
-    mkdir $REP_CLONE
-    git clone https://github.com/PierreRaybaut/formlayout.git $REP_CLONE
-    if [ "$PR" != "false" ] ; then
-        cd $REP_CLONE
-        git fetch origin pull/$PR/head:travis_pr_$PR
-    fi
-}
-
 
 install_conda()
 {
-  # Define the value to download
+  # Define the miniconda name to download
     if [ "$TRAVIS_OS_NAME" = "linux" ]; then
         MINICONDA_OS=$MINICONDA_LINUX;
     elif [ "$TRAVIS_OS_NAME" = "osx" ]; then
         MINICONDA_OS=$MINICONDA_OSX;
     fi
 
-    # You may want to periodically update this, although the conda update
-    # conda line below will keep everything up-to-date.  We do this
-    # conditionally because it saves us some downloading if the version is
-    # the same.
-    if [ "$PY_VERSION" = "2.7" ]; then
-        wget "http://repo.continuum.io/miniconda/Miniconda-$MINICONDA_VERSION-$MINICONDA_OS.sh" -O miniconda.sh;
-    else
-        wget "http://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VERSION-$MINICONDA_OS.sh" -O miniconda.sh;
-    fi
+    wget "http://repo.continuum.io/miniconda/Miniconda3-$MINICONDA_VERSION-$MINICONDA_OS.sh" -O miniconda.sh;
 
     bash miniconda.sh -b -p "$HOME/miniconda";
     export PATH="$HOME/miniconda/bin:$PATH";
@@ -46,15 +27,17 @@ install_conda()
     # Update conda
     conda update -q conda;
 
-    # Installing conda-build to do build tests
-    if [ "$USE_CONDA" = true ]; then
-        echo 'conda-build ==1.18.1' > $HOME/miniconda/conda-meta/pinned;
-        conda install conda-build;
-        conda create -q -n test-environment python=$PY_VERSION;
-    fi
-    
-    conda config --add channels dsdale24
+    conda create -q -n test-environment python=$PY_VERSION;
+    source activate test-environment
 
+    if [ "$USE_QT_API" = "PyQt5" ]; then
+        conda install -c https://conda.anaconda.org/spyder-ide pyqt5
+        export QT_API=pyqt5;
+    elif [ "$USE_QT_API" = "PyQt4" ]; then
+        conda install pyqt;
+    elif [ "$USE_QT_API" = "PySide" ]; then
+        conda install_pyside;
+    fi
 }
 
 
@@ -73,27 +56,18 @@ install_pyside()
 }
 
 
-install_pip()
+install_arial_font()
 {
-    if [ "$USE_QT_API" = "PyQt5" ]; then
-        conda install -c https://conda.anaconda.org/mmcauliffe pyqt5;
-    elif [ "$USE_QT_API" = "PyQt4" ]; then
-        conda install pyqt;
-    elif [ "$USE_QT_API" = "PySide" ]; then
-        install_pyside;
-    fi
-
-    pip install --no-index --trusted-host $WHEELHOUSE_URI --find-links=http://$WHEELHOUSE_URI/ $EXTRA_PACKAGES;
+    # The next line is to avoid an interactive prompt asking to accept
+    # the EULA license
+    echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections;
+    sudo apt-get install ttf-mscorefonts-installer;
 }
-
 
 #==============================================================================
 # Main
 #==============================================================================
-download_code;
 
-# Use conda even to test pip!
+# Arial is needed to run formlayout.py
+install_arial_font;
 install_conda;
-
-# export EXTRA_PACKAGES="matplotlib pandas sympy pyzmq pillow"
-install_pip;
