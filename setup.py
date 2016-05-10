@@ -33,6 +33,10 @@ setup(name = LIBNAME,
       version = __version__,
       description = 'Python module for creating Qt form dialogs and widgets',
       long_description = """\
+.. image:: https://pythonhosted.org/formlayout/_images/advanced1.png
+.. image:: https://pythonhosted.org/formlayout/_images/advanced2.png
+.. image:: https://pythonhosted.org/formlayout/_images/advanced3.png
+
 With ``formlayout``, generating a form is very easy.
 
 Here is a simple example (more are included in source package)::
