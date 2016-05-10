@@ -21,6 +21,14 @@ LIBNAME = 'formlayout'
 import setuptools  # analysis:ignore
 from distutils.core import setup
 
+CLASSIFIERS = []
+if 'beta' in version or 'b' in version:
+    CLASSIFIERS += ['Development Status :: 4 - Beta']
+elif 'alpha' in version or 'a' in version or version.startswith('0.'):
+    CLASSIFIERS += ['Development Status :: 3 - Alpha']
+else:
+    CLASSIFIERS += ['Development Status :: 5 - Production/Stable']
+
 setup(name = LIBNAME,
       version = __version__,
       description = 'Python module for creating Qt form dialogs and widgets',
@@ -53,15 +61,16 @@ This shows the following dialog box:
       platforms = ['any'],
       py_modules = ['formlayout'],
       package_data = {},
-      classifiers = ['Development Status :: 5 - Production/Stable',
-                     'License :: OSI Approved :: MIT License',
-                     'Operating System :: MacOS',
-                     'Operating System :: Microsoft :: Windows',
-                     'Operating System :: OS Independent',
-                     'Operating System :: POSIX',
-                     'Operating System :: Unix',
-                     'Programming Language :: Python :: 2.6',
-                     'Programming Language :: Python :: 2.7',
-                     'Programming Language :: Python :: 3',
+      classifiers=CLASSIFIERS + [
+        'License :: OSI Approved :: MIT License',
+        'Topic :: Software Development :: Widget Sets',
+        'Operating System :: MacOS',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: OS Independent',
+        'Operating System :: POSIX',
+        'Operating System :: Unix',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
         ],
     )
