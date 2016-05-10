@@ -6,5 +6,10 @@ set -ex
 export TEST_CI_WIDGETS=True
 
 python formlayout.py
-python ./examples/simple.py
-python ./examples/advanced.py
+
+for f in examples/*.py; do
+    python "$f"
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+done
