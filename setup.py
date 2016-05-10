@@ -41,7 +41,7 @@ Here is a simple example (more are included in source package)::
 
 This shows the following dialog box:
 
-.. image:: http://static.freedownloadmanager.org/s/1182/1182265_2.jpg
+.. image:: https://pythonhosted.org/formlayout/_images/simple.png
 """,
       author = "Pierre Raybaut",
       author_email = 'pierre.raybaut@gmail.com',
