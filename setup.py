@@ -8,10 +8,10 @@
 formlayout
 ==========
 
-Module for creating Qt form dialogs, layouts and widgets to edit various type 
-of parameters, compatible with PyQt4, PyQt5 and PySide
+Python module providing the most easy way to create Qt form dialogs and widgets
+(compatible with Python 2, Python 3, PyQt4, PyQt5 and PySide).
 
-Copyright © 2009-2015 Pierre Raybaut
+Copyright © 2009-2016 Pierre Raybaut
 This software is licensed under the terms of the MIT license
 """
 
@@ -31,13 +31,16 @@ else:
 
 setup(name = LIBNAME,
       version = __version__,
-      description = 'Python module for creating Qt form dialogs and widgets',
+      description = 'The most easy way to create Qt form dialogs and widgets with Python',
       long_description = """\
 .. image:: https://pythonhosted.org/formlayout/_images/advanced1.png
 .. image:: https://pythonhosted.org/formlayout/_images/advanced2.png
 .. image:: https://pythonhosted.org/formlayout/_images/advanced3.png
 
-With ``formlayout``, generating a form is very easy.
+With ``formlayout``, generating a form is very easy:
+  * To show a dialog box, just call the ``fedit`` function.
+  * To set-up the form dialog, simply use lists to pass parameters (field names, default values, ...).
+  * To embedd ``formlayout`` in your own library, just copy the ``formlayout`` autoconsistent single script (*zero dependency*, except Qt itself).
 
 Here is a simple example (more are included in source package)::
 
