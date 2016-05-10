@@ -31,6 +31,8 @@ Here is a simple example (more are included in source package)::
 
     from formlayout import fedit
     datalist = [('Name', 'Paul'),
+                (None, None),
+                (None, 'Information:'),
                 ('Age', 30),
                 ('Sex', [0, 'Male', 'Female']),
                 ('Size', 12.1),
