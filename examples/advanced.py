@@ -11,6 +11,11 @@ Please take a look at formlayout.py for more examples
 (at the end of the script, after the 'if __name__ == "__main__":' line)
 """
 
+import sys, os
+print(os.getcwd())
+print('-------------------')
+print(sys.path)
+
 from formlayout import fedit
 
 def create_datalist_example():
