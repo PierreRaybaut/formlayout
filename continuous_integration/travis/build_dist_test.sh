@@ -15,9 +15,17 @@ cd $HOME/build/PierreRaybaut/formlayout
 #    git checkout master
 #fi
 
-# Wheel build is causing a segfault when using PyQt4!?
-## Building universal wheel package
-# python setup.py sdist bdist_wheel --universal
-
-# Building Python source package
-python setup.py build sdist
+# Somehow, building the package is segfaulting when using PyQt4.
+# Here is the corresponding Travis log:
+#   [...]
+#   Writing formlayout-2.0.0a0/setup.cfg
+#   creating dist
+#   Creating tar archive
+#   ./continuous_integration/travis/build_dist_test.sh: line 23:  4944 Segmentation fault      (core dumped) python setup.py build sdist
+if [ "$USE_QT_API" = "PyQt5" ]; then
+  # Building universal wheel package
+  python setup.py sdist bdist_wheel --universal
+  
+  # Building Python source package
+  python setup.py build sdist
+fi
