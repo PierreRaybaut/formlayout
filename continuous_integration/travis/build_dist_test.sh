@@ -5,7 +5,7 @@ set -ex
 # Print basic testing info
 pip --version
 
-cd $HOME/builds/PierreRaybaut/formlayout
+cd $HOME/build/PierreRaybaut/formlayout
 
 # Checkout the right branch
 if [ $TRAVIS_PULL_REQUEST != "false" ] ; then
