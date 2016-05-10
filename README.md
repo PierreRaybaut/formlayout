@@ -1,6 +1,10 @@
 # formlayout
 Python module for creating Qt form dialogs and widgets
 
+<img src="https://pythonhosted.org/formlayout/_images/advanced1.png">
+<img src="https://pythonhosted.org/formlayout/_images/advanced2.png">
+<img src="https://pythonhosted.org/formlayout/_images/advanced3.png">
+
 See [documentation](http://pythonhosted.org/formlayout/) for more details 
 (mostly examples) on the library and [changelog](CHANGELOG.md) for recent 
 history of changes.
