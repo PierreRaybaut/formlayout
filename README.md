@@ -1,9 +1,14 @@
 # formlayout
-Python module for creating Qt form dialogs and widgets
+Python module providing the most easy way to create Qt form dialogs and widgets
 
 <img src="https://pythonhosted.org/formlayout/_images/advanced1.png">
 <img src="https://pythonhosted.org/formlayout/_images/advanced2.png">
 <img src="https://pythonhosted.org/formlayout/_images/advanced3.png">
+
+With ``formlayout``, generating a form is very easy:
+  * To show a dialog box, just call the ``fedit`` function.
+  * To set-up the form dialog, simply use lists to pass parameters (field names, default values, ...).
+  * To embedd ``formlayout`` in your own library, just copy the ``formlayout`` autoconsistent single script (*zero dependency*, except Qt itself).
 
 See [documentation](http://pythonhosted.org/formlayout/) for more details 
 (mostly examples) on the library and [changelog](CHANGELOG.md) for recent 
@@ -12,12 +17,14 @@ history of changes.
 ## Overview
 
 Graphical user interface (GUI) libraries are usually designed to address issues 
-that are far more complex than a simple dialog box. As a consequence, generating 
-simple GUI like form layouts or dialogs is generally not as easy as it should be: 
-the feature-line count ratio is very low for the most simple dialog boxes. 
-That's where ``formlayout`` can be useful, by providing a simplistic API (a 
-single function ``fedit`` taking lists as parameters) for creating simple form 
-layouts.
+which are far more complex than a simple dialog box. As a consequence, generating 
+simple form layouts or dialogs is generally not as easy as it should be: the 
+feature-line count ratio is very low for the most simple dialog boxes.
+
+Within this context, ``formlayout`` provides the absolute minimum API required 
+to create form dialog boxes (or layouts). To show a dialog box, simply call 
+the ``fedit`` function. To set-up the dialog box, just use lists to pass the 
+required parameters (field names, default values, ...).
 
 ## Simple Example
 
