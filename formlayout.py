@@ -35,19 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 from __future__ import print_function
 
-# History:
-# 1.1.0: added support for PyQt5
-# 1.0.15: added support for multiline strings
-# 1.0.14: fixed Python 3 support (regression in 1.0.13)
-# 1.0.13: replaced obsolete QColorDialog.getRgba function and fixed other 
-#         compatibility issues with PySide (see Issue 8 of formlayout website)
-# 1.0.12: added support for Python 3
-# 1.0.11: added support for PySide
-# 1.0.10: added float validator: disable "OK" and "Apply" button when not valid
-# 1.0.7: added support for "Apply" button
-# 1.0.6: code cleaning
-
-__version__ = '1.1.0'
+__version__ = '2.0.0alpha'
 __license__ = __doc__
 
 DEBUG_FORMLAYOUT = False
@@ -58,6 +46,8 @@ import datetime
 
 STDERR = sys.stderr
 
+
+# ---+- PyQt-PySide compatibility -+----
 _modname = os.environ.setdefault('QT_API', 'pyqt')
 assert _modname in ('pyqt', 'pyqt5', 'pyside')
 
@@ -99,7 +89,7 @@ if os.environ['QT_API'] == 'pyside':
     from PySide.QtCore import *  # analysis:ignore
 
 
-# ----+- Python 3 compatibility -+----
+# ---+- Python 2-3 compatibility -+----
 PY2 = sys.version[0] == '2'
 
 if PY2:
