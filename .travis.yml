@@ -28,7 +28,7 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - chmod +x ./continuous_integration/travis/install.sh
-  - export PYTHONPATH=$HOME/builds/PierreRaybaut/formlayout
+  - export PYTHONPATH=$HOME/build/PierreRaybaut/formlayout
 
 install: source ./continuous_integration/travis/install.sh;
 
