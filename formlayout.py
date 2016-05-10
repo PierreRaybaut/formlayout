@@ -44,6 +44,10 @@ import os
 import sys
 import datetime
 
+print(os.getcwd())
+print('*********************')
+print(sys.path)
+
 STDERR = sys.stderr
 
 
