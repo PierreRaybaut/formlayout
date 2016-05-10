@@ -386,15 +386,11 @@ class FormWidget(QWidget):
                 self.formlayout.addRow(separator)
                 self.widgets.append(None)
                 continue
-            elif label is None:
+            if label is None:
                 # Comment
                 self.formlayout.addRow(QLabel(value))
                 self.widgets.append(None)
                 continue
-            tooltip = False
-            index = label.find('::')
-            if index != -1:
-                label, tooltip = label[:index], label[index+2:]
             if tuple_to_qfont(value) is not None:
                 field = FontLayout(value, self)
             elif text_to_qcolor(value).isValid():
@@ -457,8 +453,13 @@ class FormWidget(QWidget):
                 field.setDate(value)
             else:
                 field = QLineEdit(repr(value), self)
-            if tooltip:
+            
+            # Eventually extracting tooltip from label and processing it
+            index = label.find('::')
+            if index != -1:
+                label, tooltip = label[:index], label[index+2:]
                 field.setToolTip(tooltip)
+
             self.formlayout.addRow(label, field)
             self.widgets.append(field)
             
