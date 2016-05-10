@@ -19,7 +19,7 @@ That's where ``formlayout`` can be useful, by providing a simplistic API (a
 single function ``fedit`` taking lists as parameters) for creating simple form 
 layouts.
 
-## Example
+## Simple Example
 
 With ``formlayout``, generating a form is very easy.
 Here is a simple example (more are included in source package):
@@ -41,3 +41,14 @@ fedit(datalist, title="Describe yourself", comment="This is just an <b>example</
 <img src="https://pythonhosted.org/formlayout/_images/simple.png">
 
 
+## Installation
+
+The only requirements are Python and Qt:
+- Python >=2.6 or Python >=3.2
+- PyQt4 >=4.4 or PyQt5 >= 5.5 or PySide
+
+Installation from the source package is straightforward:
+
+```bash
+python setup.py install
+```
