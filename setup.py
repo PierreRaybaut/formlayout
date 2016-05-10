@@ -15,7 +15,7 @@ Copyright © 2009-2016 Pierre Raybaut
 This software is licensed under the terms of the MIT license
 """
 
-from formlayout import __version__
+from formlayout import __version__ as version
 LIBNAME = 'formlayout'
 
 import setuptools  # analysis:ignore
@@ -30,7 +30,7 @@ else:
     CLASSIFIERS += ['Development Status :: 5 - Production/Stable']
 
 setup(name = LIBNAME,
-      version = __version__,
+      version = version,
       description = 'The most easy way to create Qt form dialogs and widgets with Python',
       long_description = """\
 .. image:: https://pythonhosted.org/formlayout/_images/advanced1.png
