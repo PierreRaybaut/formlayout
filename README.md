@@ -1,6 +1,10 @@
 # formlayout
 Python module for creating Qt form dialogs and widgets
 
+See [documentation](http://pythonhosted.org/formlayout/) for more details 
+(mostly examples) on the library and [changelog](CHANGELOG.md) for recent 
+history of changes.
+
 ## Overview
 
 Graphical user interface (GUI) libraries are usually designed to address issues 
@@ -19,6 +23,8 @@ Here is a simple example (more are included in source package):
 ```python
 from formlayout import fedit
 datalist = [('Name', 'Paul'),
+            (None, None),
+            (None, 'Information:'),
             ('Age', 30),
             ('Sex', [0, 'Male', 'Female']),
             ('Size', 12.1),
@@ -28,4 +34,6 @@ datalist = [('Name', 'Paul'),
 fedit(datalist, title="Describe yourself", comment="This is just an <b>example</b>.")
 ```
 
-<img src="http://static.freedownloadmanager.org/s/1182/1182265_2.jpg">
+<img src="https://pythonhosted.org/formlayout/_images/simple.png">
+
+
