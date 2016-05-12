@@ -15,6 +15,12 @@ Copyright © 2009-2016 Pierre Raybaut
 This software is licensed under the terms of the MIT license
 """
 
+# Work-around: to avoid a segmentation fault in fill_window () from
+# libz.so.1, zlib needs to be imported before PyQt4. See
+# https://github.com/ContinuumIO/anaconda-issues/issues/272 for more
+# details
+import zlib
+
 from formlayout import __version__ as version
 LIBNAME = 'formlayout'
 
