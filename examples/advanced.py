@@ -32,10 +32,17 @@ def create_datagroup_example():
             (datalist, "Category 2", "Category 2 comment"),
             (datalist, "Category 3", "Category 3 comment"))
 
+def apply_function(result):
+    print(result)
+
 #--------- datalist example
 datalist = create_datalist_example()
 print("result:", fedit(datalist, title="Example",
-                       comment="This is just an <b>example</b>."))
+                       comment="This is just an <b>example</b>.",
+                       apply=apply_function,
+                       ok='Custom &OK button',
+                       cancel='Custom &Cancel button',
+                       apply_='Custom &Apply button'))
 
 #--------- datagroup example
 datagroup = create_datagroup_example()

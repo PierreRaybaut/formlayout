@@ -561,7 +561,7 @@ class FormTabWidget(QWidget):
 class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="",
-                 icon=None, parent=None, apply=None):
+                 icon=None, parent=None, apply=None, **options):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -570,8 +570,12 @@ class FormDialog(QDialog):
         # a segmentation fault on UNIX or an application crash on Windows
         self.setAttribute(Qt.WA_DeleteOnClose)
 
+        self.ok = options.get('ok')
+        self.cancel = options.get('cancel')
+        self.apply_ = options.get('apply_')
+
         self.apply_callback = apply
-        
+
         # Form
         if isinstance(data[0][0], (list, tuple)):
             self.formwidget = FormTabWidget(data, comment=comment,
@@ -589,20 +593,38 @@ class FormDialog(QDialog):
         self.formwidget.setup()
         
         # Button box
-        self.bbox = bbox = QDialogButtonBox(QDialogButtonBox.Ok
-                                            |QDialogButtonBox.Cancel)
+        self.bbox = bbox = QDialogButtonBox()
+        if self.ok == True:
+            bbox.addButton(QDialogButtonBox.Ok)
+        elif self.ok:
+            ok_btn = QPushButton(self.ok)
+            bbox.addButton(ok_btn, QDialogButtonBox.AcceptRole)
+        if self.cancel == True:
+            bbox.addButton(QDialogButtonBox.Cancel)
+        elif self.cancel:
+            cancel_btn = QPushButton(self.cancel)
+            bbox.addButton(cancel_btn, QDialogButtonBox.RejectRole)
+
         if self.apply_callback is not None:
-            apply_btn = bbox.addButton(QDialogButtonBox.Apply)
+            if self.apply_:
+                apply_btn = QPushButton(self.apply_)
+                bbox.addButton(apply_btn, QDialogButtonBox.ApplyRole)
+            else:
+                apply_btn = bbox.addButton(QDialogButtonBox.Apply)
             if SIGNAL is None:
                 apply_btn.clicked.connect(self.apply)
             else:
                 self.connect(apply_btn, SIGNAL("clicked()"), self.apply)
         if SIGNAL is None:
-            bbox.accepted.connect(self.accept)
-            bbox.rejected.connect(self.reject)
+            if self.ok:
+                bbox.accepted.connect(self.accept)
+            if self.cancel:
+                bbox.rejected.connect(self.reject)
         else:
-            self.connect(bbox, SIGNAL("accepted()"), SLOT("accept()"))
-            self.connect(bbox, SIGNAL("rejected()"), SLOT("reject()"))
+            if self.ok:
+                self.connect(bbox, SIGNAL("accepted()"), SLOT("accept()"))
+            if self.cancel:
+                self.connect(bbox, SIGNAL("rejected()"), SLOT("reject()"))
         layout.addWidget(bbox)
 
         self.setLayout(layout)
@@ -643,7 +665,8 @@ class FormDialog(QDialog):
         return self.data
 
 
-def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
+def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
+          **options):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -654,6 +677,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
     icon: QIcon instance
     parent: parent QWidget
     apply: apply callback (function)
+    **options default: ok=True, cancel=True
     
     datalist: list/tuple of (field_name, field_value)
     datagroup: list/tuple of (datalist *or* datagroup, title, comment)
@@ -671,6 +695,8 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
           * the first element will be the selected index (or value)
           * the other elements can be couples (key, value) or only values
     """
+    default = {'ok': True, 'cancel': True}
+    default.update(options)
     # Create a QApplication instance if no instance currently exists
     # (e.g. if the module is used directly from the interpreter)
     test_travis = os.environ.get('TEST_CI_WIDGETS', None)
@@ -688,7 +714,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None):
                            QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         _app.installTranslator(translator_qt)
 
-    dialog = FormDialog(data, title, comment, icon, parent, apply)
+    dialog = FormDialog(data, title, comment, icon, parent, apply, **default)
     if dialog.exec_():
         return dialog.get()
 
