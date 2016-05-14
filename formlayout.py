@@ -263,8 +263,24 @@ class FileLayout(QHBoxLayout):
 
     def text(self):
         return self.lineedit.text()
-    
-    
+
+
+class RadioLayout(QVBoxLayout):
+    """Radio buttons layout with QButtonGroup"""
+    def __init__(self, buttons, index, parent=None):
+        QVBoxLayout.__init__(self)
+        self.group = QButtonGroup()
+        for i, button in enumerate(buttons):
+            self.btn = QRadioButton(button)
+            if i == index:
+                self.btn.setChecked(True)
+            self.addWidget(self.btn)
+            self.group.addButton(self.btn, i)
+
+    def currentIndex(self):
+        return self.group.id(self.group.checkedButton())
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -396,17 +412,16 @@ class FormWidget(QWidget):
                 else:
                     field = QLineEdit(value, self)
             elif isinstance(value, (list, tuple)):
+                save_value = value
                 value = list(value)  # always needed to protect self.data
                 selindex = value.pop(0)
                 if isinstance(selindex, int):
                     selindex = selindex - 1
-                field = QComboBox(self)
                 if isinstance(value[0], (list, tuple)):
                     keys = [ key for key, _val in value ]
                     value = [ val for _key, val in value ]
                 else:
                     keys = value
-                field.addItems(value)
                 if selindex in value:
                     selindex = value.index(selindex)
                 elif selindex in keys:
@@ -416,7 +431,12 @@ class FormWidget(QWidget):
                           "%s, value: %s)" % (selindex, label, value),
                           file=STDERR)
                     selindex = -1
-                field.setCurrentIndex(selindex)
+                if isinstance(save_value, list):
+                    field = QComboBox(self)
+                    field.addItems(value)
+                    field.setCurrentIndex(selindex)
+                elif isinstance(save_value, tuple):
+                    field = RadioLayout(value, selindex, self)
             elif isinstance(value, bool):
                 field = QCheckBox(self)
                 field.setCheckState(Qt.Checked if value else Qt.Unchecked)
