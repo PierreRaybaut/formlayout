@@ -397,6 +397,9 @@ class FormWidget(QWidget):
             elif is_text_string(value):
                 if value in ['file', 'dir'] or value.startswith('file:'):
                     field = FileLayout(value, self)
+                elif value == 'password':
+                    field = QLineEdit(self)
+                    field.setEchoMode(QLineEdit.Password)
                 elif '\n' in value:
                     for linesep in (os.linesep, '\n'):
                         if linesep in value:
