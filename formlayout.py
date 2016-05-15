@@ -377,8 +377,9 @@ class FormWidget(QWidget):
                 self.widgets.append(None)
                 continue
             if label is None:
-                image_extensions = ('.png', '.jpg')
-                if value.endswith(image_extensions):
+                img_fmt = tuple(['.'+str(bytes(ext).decode()) for ext 
+                                 in QImageReader.supportedImageFormats()])
+                if value.endswith(img_fmt):
                     # Image
                     pixmap = QPixmap(value)
                     lab = QLabel()
