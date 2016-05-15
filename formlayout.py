@@ -593,7 +593,7 @@ class FormTabWidget(QWidget):
 class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="",
-                 icon=None, parent=None, apply=None, **options):
+                 icon=None, parent=None, apply=None, ok=None, cancel=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -602,11 +602,17 @@ class FormDialog(QDialog):
         # a segmentation fault on UNIX or an application crash on Windows
         self.setAttribute(Qt.WA_DeleteOnClose)
 
-        self.ok = options.get('ok')
-        self.cancel = options.get('cancel')
-        self.apply_ = options.get('apply_')
-
-        self.apply_callback = apply
+        self.ok = ok
+        self.cancel = cancel
+        self.apply_ = None
+        self.apply_callback = None
+        if callable(apply):
+            self.apply_callback = apply
+        elif isinstance(apply, (list, tuple)):
+            self.apply_, self.apply_callback = apply
+        elif apply is not None:
+            raise AssertionError("`apply` argument must be either a function "\
+                                 "or tuple ('Apply label', apply_callback)")
 
         # Form
         if isinstance(data[0][0], (list, tuple)):
@@ -698,7 +704,7 @@ class FormDialog(QDialog):
 
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
-          **options):
+          ok=True, cancel=True):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -708,8 +714,9 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     comment: string
     icon: QIcon instance
     parent: parent QWidget
-    apply: apply callback (function)
-    **options default: ok=True, cancel=True
+    apply: apply callback (function or tuple (label, function))
+    ok: customized ok button label
+    cancel: customized cancel button label
     
     datalist: list/tuple of (field_name, field_value)
     datagroup: list/tuple of (datalist *or* datagroup, title, comment)
@@ -727,8 +734,6 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
           * the first element will be the selected index (or value)
           * the other elements can be couples (key, value) or only values
     """
-    default = {'ok': True, 'cancel': True}
-    default.update(options)
     # Create a QApplication instance if no instance currently exists
     # (e.g. if the module is used directly from the interpreter)
     test_travis = os.environ.get('TEST_CI_WIDGETS', None)
@@ -746,7 +751,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
                            QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         _app.installTranslator(translator_qt)
 
-    dialog = FormDialog(data, title, comment, icon, parent, apply, **default)
+    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel)
     if dialog.exec_():
         return dialog.get()
 

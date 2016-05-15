@@ -39,10 +39,9 @@ def apply_function(result):
 datalist = create_datalist_example()
 print("result:", fedit(datalist, title="Example",
                        comment="This is just an <b>example</b>.",
-                       apply=apply_function,
+                       apply=('Custom &Apply button', apply_function),
                        ok='Custom &OK button',
-                       cancel='Custom &Cancel button',
-                       apply_='Custom &Apply button'))
+                       cancel='Custom &Cancel button'))
 
 #--------- datagroup example
 datagroup = create_datagroup_example()
