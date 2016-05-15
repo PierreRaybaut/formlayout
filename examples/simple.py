@@ -14,6 +14,7 @@ Please take a look at formlayout.py for more examples
 from formlayout import fedit
 
 datalist = [('Name', 'Paul'),
+            (None, 'Qt.jpg'),
             (None, None),
             (None, 'Information:'),
             ('Age', 30),

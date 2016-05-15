@@ -377,8 +377,16 @@ class FormWidget(QWidget):
                 self.widgets.append(None)
                 continue
             if label is None:
-                # Comment
-                self.formlayout.addRow(QLabel(value))
+                image_extensions = ('.png', '.jpg')
+                if value.endswith(image_extensions):
+                    # Image
+                    pixmap = QPixmap(value)
+                    lab = QLabel()
+                    lab.setPixmap(pixmap)
+                    self.formlayout.addRow(lab)
+                else:
+                    # Comment
+                    self.formlayout.addRow(QLabel(value))
                 self.widgets.append(None)
                 continue
             if tuple_to_qfont(value) is not None:
