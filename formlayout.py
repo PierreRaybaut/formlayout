@@ -361,6 +361,7 @@ class FormWidget(QWidget):
         QWidget.__init__(self, parent)
         from copy import deepcopy
         self.data = deepcopy(data)
+        self.result = parent.result
         self.widgets = []
         self.formlayout = QFormLayout(self)
         if comment:
@@ -529,8 +530,20 @@ class FormWidget(QWidget):
                     value = value.toPython()  # PySide
             else:
                 value = eval(str(field.text()))
-            valuelist.append(value)
-        return valuelist
+            valuelist.append((label, value))
+        if self.result == 'list':
+            return [value for label, value in valuelist]
+        elif self.result in ['dict', 'OrderedDict', 'JSON']:
+            if self.result == 'dict':
+                dic = {}
+            else:
+                dic = OrderedDict()
+            for label, value in valuelist:
+                dic[label] = value
+            if self.result == 'JSON':
+                return json.dumps(dic)
+            else:
+                return dic
 
 
 class FormComboWidget(QWidget):
@@ -549,21 +562,37 @@ class FormComboWidget(QWidget):
         else:
             self.connect(self.combobox, SIGNAL("currentIndexChanged(int)"),
                          self.stackwidget, SLOT("setCurrentIndex(int)"))
-        
+
+        self.result = parent.result 
         self.widgetlist = []
         for data, title, comment in datalist:
             self.combobox.addItem(title)
             widget = FormWidget(data, comment=comment, parent=self)
             self.stackwidget.addWidget(widget)
-            self.widgetlist.append(widget)
+            self.widgetlist.append((title, widget))
             
     def setup(self):
-        for widget in self.widgetlist:
+        for title, widget in self.widgetlist:
             widget.setup()
 
     def get(self):
-        return [ widget.get() for widget in self.widgetlist]
-        
+        if self.result == 'list':
+            return [widget.get() for title, widget in self.widgetlist]
+        elif self.result in ['dict', 'OrderedDict', 'JSON']:
+            if self.result == 'dict':
+                dic = {}
+            else:
+                dic = OrderedDict()
+            for title, widget in self.widgetlist:
+                if self.result == 'JSON':
+                    dic[title] = json.loads(widget.get())
+                else:
+                    dic[title] = widget.get()
+            if self.result == 'JSON':
+                return json.dumps(dic)
+            else:
+                return dic
+
 
 class FormTabWidget(QWidget):
     def __init__(self, datalist, comment="", parent=None):
@@ -572,6 +601,7 @@ class FormTabWidget(QWidget):
         self.tabwidget = QTabWidget()
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
+        self.result = parent.result
         self.widgetlist = []
         for data, title, comment in datalist:
             if len(data[0])==3:
@@ -580,20 +610,35 @@ class FormTabWidget(QWidget):
                 widget = FormWidget(data, comment=comment, parent=self)
             index = self.tabwidget.addTab(widget, title)
             self.tabwidget.setTabToolTip(index, comment)
-            self.widgetlist.append(widget)
+            self.widgetlist.append((title, widget))
             
     def setup(self):
-        for widget in self.widgetlist:
+        for title, widget in self.widgetlist:
             widget.setup()
             
     def get(self):
-        return [ widget.get() for widget in self.widgetlist]
+        if self.result == 'list':
+            return [widget.get() for title, widget in self.widgetlist]
+        elif self.result in ['dict', 'OrderedDict', 'JSON']:
+            if self.result == 'dict':
+                dic = {}
+            else:
+                dic = OrderedDict()
+            for title, widget in self.widgetlist:
+                if self.result == 'JSON':
+                    dic[title] = json.loads(widget.get())
+                else:
+                    dic[title] = widget.get()
+            if self.result == 'JSON':
+                return json.dumps(dic)
+            else:
+                return dic
 
 
 class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="",
-                 icon=None, parent=None, apply=None, ok=None, cancel=None):
+                 icon=None, parent=None, apply=None, ok=None, cancel=None, result=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -613,6 +658,13 @@ class FormDialog(QDialog):
         elif apply is not None:
             raise AssertionError("`apply` argument must be either a function "\
                                  "or tuple ('Apply label', apply_callback)")
+        self.result = result
+        if self.result in ['OrderedDict', 'JSON']:
+            global OrderedDict
+            from collections import OrderedDict
+            if self.result == 'JSON':
+                global json
+                import json
 
         # Form
         if isinstance(data[0][0], (list, tuple)):
@@ -704,7 +756,7 @@ class FormDialog(QDialog):
 
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
-          ok=True, cancel=True):
+          ok=True, cancel=True, result='list'):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -717,6 +769,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     apply: apply callback (function or tuple (label, function))
     ok: customized ok button label
     cancel: customized cancel button label
+    result: result serialization ('list', 'dict', 'OrderedDict' and 'JSON')
     
     datalist: list/tuple of (field_name, field_value)
     datagroup: list/tuple of (datalist *or* datagroup, title, comment)
@@ -751,7 +804,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
                            QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         _app.installTranslator(translator_qt)
 
-    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel)
+    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel, result)
     if dialog.exec_():
         return dialog.get()
 
