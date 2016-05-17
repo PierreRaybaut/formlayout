@@ -41,11 +41,12 @@ print("result:", fedit(datalist, title="Example",
                        comment="This is just an <b>example</b>.",
                        apply=('Custom &Apply button', apply_function),
                        ok='Custom &OK button',
-                       cancel='Custom &Cancel button'))
+                       cancel='Custom &Cancel button',
+                       result='dict'))
 
 #--------- datagroup example
 datagroup = create_datagroup_example()
-print("result:", fedit(datagroup, "Global title"))
+print("result:", fedit(datagroup, "Global title", result='OrderedDict'))
     
 #--------- datagroup inside a datagroup example
 datalist = create_datalist_example()
@@ -53,4 +54,4 @@ datagroup = create_datagroup_example()
 print("result:", fedit(((datagroup, "Title 1", "Tab 1 comment"),
                         (datalist, "Title 2", "Tab 2 comment"),
                         (datalist, "Title 3", "Tab 3 comment")),
-                        "Global title"))
+                        "Global title", result='JSON'))
