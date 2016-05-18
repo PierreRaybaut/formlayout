@@ -544,6 +544,12 @@ class FormWidget(QWidget):
                 return json.dumps(dic)
             else:
                 return dic
+        elif self.result == 'XML':
+            form = ET.Element('Form')
+            for label, value in valuelist:
+                child = ET.SubElement(form, label)
+                child.text = str(value)
+            return ET.tostring(form)
 
 
 class FormComboWidget(QWidget):
@@ -592,6 +598,14 @@ class FormComboWidget(QWidget):
                 return json.dumps(dic)
             else:
                 return dic
+        elif self.result == 'XML':
+            combos = ET.Element('Combos')
+            for title, widget in self.widgetlist:
+                combo = ET.SubElement(combos, 'Combo')
+                combo.attrib['title'] = title
+                child = ET.fromstring(widget.get())
+                combo.append(child)
+            return ET.tostring(combos)
 
 
 class FormTabWidget(QWidget):
@@ -633,6 +647,14 @@ class FormTabWidget(QWidget):
                 return json.dumps(dic)
             else:
                 return dic
+        elif self.result == 'XML':
+            tabs = ET.Element('Tabs')
+            for title, widget in self.widgetlist:
+                tab = ET.SubElement(tabs, 'Tab')
+                tab.attrib['title'] = title
+                child = ET.fromstring(widget.get())
+                tab.append(child)
+            return ET.tostring(tabs)
 
 
 class FormDialog(QDialog):
@@ -647,6 +669,7 @@ class FormDialog(QDialog):
         # a segmentation fault on UNIX or an application crash on Windows
         self.setAttribute(Qt.WA_DeleteOnClose)
 
+        self.title = title
         self.ok = ok
         self.cancel = cancel
         self.apply_ = None
@@ -665,6 +688,9 @@ class FormDialog(QDialog):
             if self.result == 'JSON':
                 global json
                 import json
+        elif self.result == 'XML':
+            global ET
+            import xml.etree.ElementTree as ET
 
         # Form
         if isinstance(data[0][0], (list, tuple)):
@@ -719,7 +745,7 @@ class FormDialog(QDialog):
 
         self.setLayout(layout)
         
-        self.setWindowTitle(title)
+        self.setWindowTitle(self.title)
         if not isinstance(icon, QIcon):
             icon = QWidget().style().standardIcon(QStyle.SP_MessageBoxQuestion)
         self.setWindowIcon(icon)
@@ -738,7 +764,14 @@ class FormDialog(QDialog):
                 btn.setEnabled(valid)
         
     def accept(self):
-        self.data = self.formwidget.get()
+        if self.result == 'XML':
+            app = ET.Element('App')
+            app.attrib['title'] = self.title
+            child = ET.fromstring(self.formwidget.get())
+            app.append(child)
+            self.data = ET.tostring(app)
+        else:
+            self.data = self.formwidget.get()
         QDialog.accept(self)
         
     def reject(self):
@@ -746,7 +779,14 @@ class FormDialog(QDialog):
         QDialog.reject(self)
         
     def apply(self):
-        self.apply_callback(self.formwidget.get())
+        if self.result == 'XML':
+            app = ET.Element('App')
+            app.attrib['title'] = self.title
+            child = ET.fromstring(self.formwidget.get())
+            app.append(child)
+            self.apply_callback(ET.tostring(app))
+        else:
+            self.apply_callback(self.formwidget.get())
         
     def get(self):
         """Return form result"""
