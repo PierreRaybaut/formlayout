@@ -532,17 +532,15 @@ class FormWidget(QWidget):
                 value = eval(str(field.text()))
             valuelist.append((label, value))
         if self.result == 'list':
-            return [val for label, val in valuelist]
+            return [value for label, value in valuelist]
         elif self.result in ['dict', 'OrderedDict', 'JSON']:
             if self.result == 'dict':
                 dic = {}
             else:
-                import collections
-                dic = collections.OrderedDict()
+                dic = OrderedDict()
             for label, value in valuelist:
                 dic[label] = value
             if self.result == 'JSON':
-                import json
                 return json.dumps(dic)
             else:
                 return dic
@@ -584,16 +582,13 @@ class FormComboWidget(QWidget):
             if self.result == 'dict':
                 dic = {}
             else:
-                import collections
-                dic = collections.OrderedDict()
+                dic = OrderedDict()
             for title, widget in self.widgetlist:
                 if self.result == 'JSON':
-                    import json
                     dic[title] = json.loads(widget.get())
                 else:
                     dic[title] = widget.get()
             if self.result == 'JSON':
-                import json
                 return json.dumps(dic)
             else:
                 return dic
@@ -628,16 +623,13 @@ class FormTabWidget(QWidget):
             if self.result == 'dict':
                 dic = {}
             else:
-                import collections
-                dic = collections.OrderedDict()
+                dic = OrderedDict()
             for title, widget in self.widgetlist:
                 if self.result == 'JSON':
-                    import json
                     dic[title] = json.loads(widget.get())
                 else:
                     dic[title] = widget.get()
             if self.result == 'JSON':
-                import json
                 return json.dumps(dic)
             else:
                 return dic
@@ -667,6 +659,12 @@ class FormDialog(QDialog):
             raise AssertionError("`apply` argument must be either a function "\
                                  "or tuple ('Apply label', apply_callback)")
         self.result = result
+        if self.result in ['OrderedDict', 'JSON']:
+            global OrderedDict
+            from collections import OrderedDict
+            if self.result == 'JSON':
+                global json
+                import json
 
         # Form
         if isinstance(data[0][0], (list, tuple)):
