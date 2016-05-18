@@ -761,9 +761,6 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     Create form dialog and return result
     (if Cancel button is pressed, return None)
 
-    :param numpy.array arr: NumPy array
-    :param bool copy: if True, make a copy of the array
-    
     :param tuple data: datalist, datagroup (see below)
     :param str title: form title
     :param str comment: header comment
