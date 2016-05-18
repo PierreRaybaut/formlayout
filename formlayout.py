@@ -762,24 +762,31 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
+
+    :param numpy.array arr: NumPy array
+    :param bool copy: if True, make a copy of the array
     
-    data: datalist, datagroup
-    title: string
-    comment: string
-    icon: QIcon instance
-    parent: parent QWidget
-    apply: apply callback (function or tuple (label, function))
-    ok: customized ok button label
-    cancel: customized cancel button label
-    result: result serialization ('list', 'dict', 'OrderedDict' and 'JSON')
+    :param tuple data: datalist, datagroup (see below)
+    :param str title: form title
+    :param str comment: header comment
+    :param QIcon icon: dialog box icon
+    :param QWidget parent: parent widget
+    :param str ok: customized ok button label
+    :param str cancel: customized cancel button label
+    :param tuple apply: (label, function) customized button label and callback
+    :param function apply: apply callback
+    :param str result: result serialization ('list', 'dict', 'OrderedDict' or 'JSON')
+
+    :return: Serialized result (data type depends on `result` parameter)
     
     datalist: list/tuple of (field_name, field_value)
     datagroup: list/tuple of (datalist *or* datagroup, title, comment)
     
-    -> one field for each member of a datalist
-    -> one tab for each member of a top-level datagroup
-    -> one page (of a multipage widget, each page can be selected with a combo
-       box) for each member of a datagroup inside a datagroup
+    Tips:
+      * one field for each member of a datalist
+      * one tab for each member of a top-level datagroup
+      * one page (of a multipage widget, each page can be selected with a 
+        combo box) for each member of a datagroup inside a datagroup
        
     Supported types for field_value:
       - int, float, str, unicode, bool
