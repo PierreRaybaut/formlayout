@@ -539,6 +539,10 @@ class FormWidget(QWidget):
             else:
                 dic = OrderedDict()
             for label, value in valuelist:
+                if label in dic.keys():
+                    print("Warning: '%s' is duplicate and '%s' doesn't "\
+                          "handle it, you should use 'list' or 'XML' instead"\
+                          % (label, self.result), file=STDERR)
                 dic[label] = value
             if self.result == 'JSON':
                 return json.dumps(dic)
