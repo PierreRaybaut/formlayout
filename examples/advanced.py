@@ -46,7 +46,7 @@ print("result:", fedit(datalist, title="Example",
 
 #--------- datagroup example
 datagroup = create_datagroup_example()
-print("result:", fedit(datagroup, "Global title", result='OrderedDict'))
+print("result:", fedit(datagroup, "Global title", result='JSON'))
     
 #--------- datagroup inside a datagroup example
 datalist = create_datalist_example()
@@ -54,4 +54,4 @@ datagroup = create_datagroup_example()
 print("result:", fedit(((datagroup, "Title 1", "Tab 1 comment"),
                         (datalist, "Title 2", "Tab 2 comment"),
                         (datalist, "Title 3", "Tab 3 comment")),
-                        "Global title", result='JSON'))
+                        "Global title", result='XML'))
