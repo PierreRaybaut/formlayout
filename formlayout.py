@@ -351,7 +351,7 @@ class FontLayout(QGridLayout):
         return qfont_to_tuple(font)
 
 
-def is_edit_valid(edit):
+def is_float_valid(edit):
     text = edit.text()
     state = edit.validator().validate(text, 0)[0]
     return state == QDoubleValidator.Acceptable
@@ -760,7 +760,7 @@ class FormDialog(QDialog):
     def float_valid(self):
         valid = True
         for field in self.float_fields:
-            if not is_edit_valid(field):
+            if not is_float_valid(field):
                 valid = False
         self.update_buttons(valid)
 
