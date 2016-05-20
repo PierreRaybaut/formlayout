@@ -460,10 +460,10 @@ class FormWidget(QWidget):
                 dialog.register_float_field(field)
                 if SIGNAL is None:
                     field.textChanged.connect(
-                                 lambda text: dialog.update_buttons())
+                                 lambda text: dialog.float_valid())
                 else:
                     self.connect(field, SIGNAL('textChanged(QString)'),
-                                 lambda text: dialog.update_buttons())
+                                 lambda text: dialog.float_valid())
             elif isinstance(value, int):
                 field = QSpinBox(self)
                 field.setRange(-1e9, 1e9)
@@ -757,11 +757,14 @@ class FormDialog(QDialog):
     def register_float_field(self, field):
         self.float_fields.append(field)
     
-    def update_buttons(self):
+    def float_valid(self):
         valid = True
         for field in self.float_fields:
             if not is_edit_valid(field):
                 valid = False
+        self.update_buttons(valid)
+
+    def update_buttons(self, valid):
         for btn in self.bbox.buttons():
             btn_role = self.bbox.buttonRole(btn)
             if btn_role in (QDialogButtonBox.AcceptRole, QDialogButtonBox.ApplyRole):
