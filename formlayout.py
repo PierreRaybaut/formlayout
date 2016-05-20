@@ -762,9 +762,9 @@ class FormDialog(QDialog):
         for field in self.float_fields:
             if not is_edit_valid(field):
                 valid = False
-        for btn_type in (QDialogButtonBox.Ok, QDialogButtonBox.Apply):
-            btn = self.bbox.button(btn_type)
-            if btn is not None:
+        for btn in self.bbox.buttons():
+            btn_role = self.bbox.buttonRole(btn)
+            if btn_role in (QDialogButtonBox.AcceptRole, QDialogButtonBox.ApplyRole):
                 btn.setEnabled(valid)
         
     def accept(self):
