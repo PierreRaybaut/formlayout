@@ -459,11 +459,10 @@ class FormWidget(QWidget):
                 dialog = self.get_dialog()
                 dialog.register_float_field(field)
                 if SIGNAL is None:
-                    field.textChanged.connect(
-                                 lambda text: dialog.float_valid())
+                    field.textChanged.connect(dialog.float_valid)
                 else:
                     self.connect(field, SIGNAL('textChanged(QString)'),
-                                 lambda text: dialog.float_valid())
+                                 dialog.float_valid)
             elif isinstance(value, int):
                 field = QSpinBox(self)
                 field.setRange(-1e9, 1e9)
