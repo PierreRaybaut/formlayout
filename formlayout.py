@@ -357,7 +357,7 @@ def is_float_valid(edit):
     return state == QDoubleValidator.Acceptable
 
 def is_required_valid(edit):
-    if isinstance(edit, QLineEdit):
+    if isinstance(edit, (QLineEdit, FileLayout)):
         if edit.text():
             return True
     elif isinstance(edit, QComboBox):
@@ -493,7 +493,7 @@ class FormWidget(QWidget):
 
             # Eventually catching the 'required' feature and processing it
             if label.endswith(' *'):
-                if isinstance(field, (QLineEdit, QComboBox)):
+                if isinstance(field, (QLineEdit, QComboBox, FileLayout)):
                     dialog = self.get_dialog()
                     dialog.register_required_field(field)
                 else:
@@ -510,6 +510,12 @@ class FormWidget(QWidget):
                         field.currentIndexChanged.connect(dialog.required_valid)
                     else:
                         self.connect(field, SIGNAL('currentIndexChanged(QString)'),
+                                     dialog.required_valid)
+                elif isinstance(field, FileLayout):
+                    if SIGNAL is None:
+                        field.lineedit.textChanged.connect(dialog.required_valid)
+                    else:
+                        self.connect(field.lineedit, SIGNAL('textChanged(QString)'),
                                      dialog.required_valid)
 
             self.formlayout.addRow(label, field)
