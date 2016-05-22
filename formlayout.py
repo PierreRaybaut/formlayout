@@ -358,6 +358,15 @@ def is_float_valid(edit):
     state = edit.validator().validate(text, 0)[0]
     return state == QDoubleValidator.Acceptable
 
+def is_required_valid(edit):
+    if isinstance(edit, (QLineEdit, FileLayout)):
+        if edit.text():
+            return True
+    elif isinstance(edit, (QComboBox, RadioLayout)):
+        if edit.currentIndex() != -1:
+            return True
+    return False
+
 class FormWidget(QWidget):
     def __init__(self, data, comment="", parent=None):
         QWidget.__init__(self, parent)
@@ -483,6 +492,39 @@ class FormWidget(QWidget):
             if index != -1:
                 label, tooltip = label[:index], label[index+2:]
                 field.setToolTip(tooltip)
+
+            # Eventually catching the 'required' feature and processing it
+            if label.endswith(' *'):
+                if isinstance(field, (QLineEdit, QComboBox, FileLayout, RadioLayout)):
+                    dialog = self.get_dialog()
+                    dialog.register_required_field(field)
+                else:
+                    print("Warning: '%s' doesn't support 'required' feature"\
+                          % type(field), file=STDERR)
+                if isinstance(field, QLineEdit):
+                    if SIGNAL is None:
+                        field.textChanged.connect(dialog.required_valid)
+                    else:
+                        self.connect(field, SIGNAL('textChanged(QString)'),
+                                     dialog.required_valid)
+                elif isinstance(field, QComboBox):
+                    if SIGNAL is None:
+                        field.currentIndexChanged.connect(dialog.required_valid)
+                    else:
+                        self.connect(field, SIGNAL('currentIndexChanged(QString)'),
+                                     dialog.required_valid)
+                elif isinstance(field, FileLayout):
+                    if SIGNAL is None:
+                        field.lineedit.textChanged.connect(dialog.required_valid)
+                    else:
+                        self.connect(field.lineedit, SIGNAL('textChanged(QString)'),
+                                     dialog.required_valid)
+                elif isinstance(field, RadioLayout):
+                    if SIGNAL is None:
+                        field.group.buttonClicked.connect(dialog.required_valid)
+                    else:
+                        self.connect(field.group, SIGNAL('buttonClicked(int)'),
+                                     dialog.required_valid)
 
             self.formlayout.addRow(label, field)
             self.widgets.append(field)
@@ -711,6 +753,7 @@ class FormDialog(QDialog):
         layout.addWidget(self.formwidget)
         
         self.float_fields = []
+        self.required_fields = []
         self.formwidget.setup()
         
         # Button box
@@ -747,6 +790,7 @@ class FormDialog(QDialog):
             if self.cancel:
                 self.connect(bbox, SIGNAL("rejected()"), SLOT("reject()"))
         layout.addWidget(bbox)
+        self.required_valid()
 
         self.setLayout(layout)
         
@@ -757,11 +801,21 @@ class FormDialog(QDialog):
         
     def register_float_field(self, field):
         self.float_fields.append(field)
-    
+
+    def register_required_field(self, field):
+        self.required_fields.append(field)
+
     def float_valid(self):
         valid = True
         for field in self.float_fields:
             if not is_float_valid(field):
+                valid = False
+        self.update_buttons(valid)
+
+    def required_valid(self):
+        valid = True
+        for field in self.required_fields:
+            if not is_required_valid(field):
                 valid = False
         self.update_buttons(valid)
 
