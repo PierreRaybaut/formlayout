@@ -297,8 +297,6 @@ def tuple_to_qfont(tup):
        or not isinstance(tup[2], bool) \
        or not isinstance(tup[3], bool):
         return None
-    if not font_is_installed(tup[0]):
-        print("Warning: Font `%s` is not installed" % tup[0], file=sys.stderr)
     font = QFont()
     family, size, italic, bold = tup
     font.setFamily(family)
@@ -315,6 +313,9 @@ class FontLayout(QGridLayout):
     """Font selection"""
     def __init__(self, value, parent=None):
         QGridLayout.__init__(self)
+        if not font_is_installed(value[0]):
+            print("Warning: Font `%s` is not installed" % value[0],
+                  file=sys.stderr)
         font = tuple_to_qfont(value)
         assert font is not None
         
