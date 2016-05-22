@@ -265,6 +265,42 @@ class FileLayout(QHBoxLayout):
         return self.lineedit.text()
 
 
+class SliderLayout(QHBoxLayout):
+    """QSlider with QLabel"""
+    def __init__(self, value, parent=None):
+        QHBoxLayout.__init__(self)
+        index = value.find('@')
+        if index != -1:
+            value, default = value[:index], int(value[index+1:])
+        else:
+            default = False
+        parsed = value.split(':')
+        self.slider = QSlider(Qt.Horizontal)
+        if parsed[-1] == '':
+            self.slider.setTickPosition(2)
+            parsed.pop(-1)
+        if len(parsed) == 2:
+            self.slider.setMaximum(int(parsed[1]))
+        elif len(parsed) == 3:
+            self.slider.setMinimum(int(parsed[1]))
+            self.slider.setMaximum(int(parsed[2]))
+        if default:
+            self.slider.setValue(default)  # always set value in last
+        if SIGNAL is None:
+            self.slider.valueChanged.connect(self.update)
+        else:
+            self.connect(self.slider, SIGNAL("valueChanged(int)"), self.update)
+        self.cpt = QLabel(str(self.value()))
+        self.addWidget(self.slider)
+        self.addWidget(self.cpt)
+
+    def update(self):
+        self.cpt.setText(str(self.value()))
+
+    def value(self):
+        return self.slider.value()
+
+
 class RadioLayout(QVBoxLayout):
     """Radio buttons layout with QButtonGroup"""
     def __init__(self, buttons, index, parent=None):
@@ -429,6 +465,9 @@ class FormWidget(QWidget):
             elif is_text_string(value):
                 if value in ['file', 'dir'] or value.startswith('file:'):
                     field = FileLayout(value, self)
+                elif value == 'slider' or value.startswith('slider:') \
+                                       or value.startswith('slider@'):
+                    field = SliderLayout(value, self)
                 elif value == 'password':
                     field = QLineEdit(self)
                     field.setEchoMode(QLineEdit.Password)
@@ -560,6 +599,8 @@ class FormWidget(QWidget):
                 if isinstance(field, QTextEdit):
                     value = to_text_string(field.toPlainText()
                                            ).replace(u("\u2029"), os.linesep)
+                elif isinstance(field, SliderLayout):
+                    value = field.value()
                 else:
                     value = to_text_string(field.text())
             elif isinstance(value, (list, tuple)):
