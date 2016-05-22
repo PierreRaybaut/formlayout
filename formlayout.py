@@ -298,7 +298,7 @@ def tuple_to_qfont(tup):
        or not isinstance(tup[3], bool):
         return None
     if not font_is_installed(tup[0]):
-        raise TypeError("Font `%s` is not installed" % tup[0])
+        print("Warning: Font `%s` is not installed" % tup[0])
     font = QFont()
     family, size, italic, bold = tup
     font.setFamily(family)
