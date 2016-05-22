@@ -500,7 +500,8 @@ class FormWidget(QWidget):
 
             # Eventually catching the 'required' feature and processing it
             if label.endswith(' *'):
-                if isinstance(field, (QLineEdit, QTextEdit, QComboBox, FileLayout, RadioLayout)):
+                if isinstance(field, (QLineEdit, QTextEdit, QComboBox,
+                                      FileLayout, RadioLayout)):
                     dialog = self.get_dialog()
                     dialog.register_required_field(field)
                 else:
@@ -520,19 +521,24 @@ class FormWidget(QWidget):
                                      dialog.required_valid)
                 elif isinstance(field, QComboBox):
                     if SIGNAL is None:
-                        field.currentIndexChanged.connect(dialog.required_valid)
+                        field.currentIndexChanged.connect(\
+                            dialog.required_valid)
                     else:
-                        self.connect(field, SIGNAL('currentIndexChanged(QString)'),
+                        self.connect(field,
+                                     SIGNAL('currentIndexChanged(QString)'),
                                      dialog.required_valid)
                 elif isinstance(field, FileLayout):
                     if SIGNAL is None:
-                        field.lineedit.textChanged.connect(dialog.required_valid)
+                        field.lineedit.textChanged.connect(\
+                            dialog.required_valid)
                     else:
-                        self.connect(field.lineedit, SIGNAL('textChanged(QString)'),
+                        self.connect(field.lineedit,
+                                     SIGNAL('textChanged(QString)'),
                                      dialog.required_valid)
                 elif isinstance(field, RadioLayout):
                     if SIGNAL is None:
-                        field.group.buttonClicked.connect(dialog.required_valid)
+                        field.group.buttonClicked.connect(\
+                            dialog.required_valid)
                     else:
                         self.connect(field.group, SIGNAL('buttonClicked(int)'),
                                      dialog.required_valid)
@@ -717,8 +723,8 @@ class FormTabWidget(QWidget):
 
 class FormDialog(QDialog):
     """Form Dialog"""
-    def __init__(self, data, title="", comment="",
-                 icon=None, parent=None, apply=None, ok=None, cancel=None, result=None):
+    def __init__(self, data, title="", comment="", icon=None, parent=None,
+                 apply=None, ok=None, cancel=None, result=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -833,7 +839,8 @@ class FormDialog(QDialog):
     def update_buttons(self, valid):
         for btn in self.bbox.buttons():
             btn_role = self.bbox.buttonRole(btn)
-            if btn_role in (QDialogButtonBox.AcceptRole, QDialogButtonBox.ApplyRole):
+            if btn_role in (QDialogButtonBox.AcceptRole,
+                            QDialogButtonBox.ApplyRole):
                 btn.setEnabled(valid)
         
     def accept(self):
@@ -918,10 +925,11 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
         _app = QApplication([])
         translator_qt = QTranslator()
         translator_qt.load('qt_' + QLocale.system().name(),
-                           QLibraryInfo.location(QLibraryInfo.TranslationsPath))
+                       QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         _app.installTranslator(translator_qt)
 
-    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel, result)
+    dialog = FormDialog(data, title, comment, icon, parent,
+                        apply, ok, cancel, result)
     if dialog.exec_():
         return dialog.get()
 
