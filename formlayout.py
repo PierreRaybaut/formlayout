@@ -429,6 +429,8 @@ class FormWidget(QWidget):
                     field = QLineEdit(self)
                     field.setEchoMode(QLineEdit.Password)
                 elif '\n' in value:
+                    if value == '\n':
+                        value = ''
                     for linesep in (os.linesep, '\n'):
                         if linesep in value:
                             value = value.replace(linesep, u("\u2029"))
