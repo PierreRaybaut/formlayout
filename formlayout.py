@@ -365,6 +365,9 @@ def is_required_valid(edit):
     elif isinstance(edit, (QComboBox, RadioLayout)):
         if edit.currentIndex() != -1:
             return True
+    elif isinstance(edit, QTextEdit):
+        if edit.toPlainText():
+            return True
     return False
 
 class FormWidget(QWidget):
@@ -497,7 +500,7 @@ class FormWidget(QWidget):
 
             # Eventually catching the 'required' feature and processing it
             if label.endswith(' *'):
-                if isinstance(field, (QLineEdit, QComboBox, FileLayout, RadioLayout)):
+                if isinstance(field, (QLineEdit, QTextEdit, QComboBox, FileLayout, RadioLayout)):
                     dialog = self.get_dialog()
                     dialog.register_required_field(field)
                 else:
@@ -508,6 +511,12 @@ class FormWidget(QWidget):
                         field.textChanged.connect(dialog.required_valid)
                     else:
                         self.connect(field, SIGNAL('textChanged(QString)'),
+                                     dialog.required_valid)
+                elif isinstance(field, QTextEdit):
+                    if SIGNAL is None:
+                        field.textChanged.connect(dialog.required_valid)
+                    else:
+                        self.connect(field, SIGNAL('textChanged()'),
                                      dialog.required_valid)
                 elif isinstance(field, QComboBox):
                     if SIGNAL is None:
