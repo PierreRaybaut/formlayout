@@ -11,10 +11,14 @@ Please take a look at formlayout.py for more examples
 (at the end of the script, after the 'if __name__ == "__main__":' line)
 """
 
+import datetime
 from formlayout import fedit
 
-def create_datalist_example():
-    return [('str', 'this is a string'),
+def create_datalist_example(json=False):
+    test = [('str', 'this is a string'),
+            ('str_m', """this is a 
+             MULTILINE
+             string"""),
             ('list', [0, '1', '3', '4']),
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
                        ('-.', 'DashDot'), ('-', 'Solid'),
@@ -22,12 +26,20 @@ def create_datalist_example():
             ('float', 1.2),
             (None, 'Other:'),
             ('int', 12),
+            ('font', ('Arial', 10, False, True)),
             ('color', '#123409'),
             ('bool', True),
             ]
+    if not json:
+        # Adding data types which are *not* supported by json serialization
+        test += [
+                 ('date', datetime.date(2010, 10, 10)),
+                 ('datetime', datetime.datetime(2010, 10, 10)),
+                 ]
+    return test
     
-def create_datagroup_example():
-    datalist = create_datalist_example()
+def create_datagroup_example(json=False):
+    datalist = create_datalist_example(json=json)
     return ((datalist, "Category 1", "Category 1 comment"),
             (datalist, "Category 2", "Category 2 comment"),
             (datalist, "Category 3", "Category 3 comment"))
@@ -45,9 +57,9 @@ print("result:", fedit(datalist, title="Example",
                        result='dict'))
 
 #--------- datagroup example
-datagroup = create_datagroup_example()
+datagroup = create_datagroup_example(json=True)
 print("result:", fedit(datagroup, "Global title", result='JSON'))
-    
+
 #--------- datagroup inside a datagroup example
 datalist = create_datalist_example()
 datagroup = create_datagroup_example()
