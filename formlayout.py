@@ -360,15 +360,39 @@ def is_float_valid(edit):
     return state == QDoubleValidator.Acceptable
 
 def is_required_valid(edit):
-    if isinstance(edit, (QLineEdit, FileLayout)):
+    bgd_color = "background-color:rgb(255, 175, 90);"
+    if isinstance(edit, QLineEdit):
         if edit.text():
+            edit.setStyleSheet("")
             return True
-    elif isinstance(edit, (QComboBox, RadioLayout)):
+        else:
+            edit.setStyleSheet(bgd_color)
+    elif isinstance(edit, FileLayout):
+        if edit.text():
+            edit.lineedit.setStyleSheet("")
+            return True
+        else:
+            edit.lineedit.setStyleSheet(bgd_color)
+    elif isinstance(edit, QComboBox):
         if edit.currentIndex() != -1:
+            edit.setStyleSheet("")
             return True
+        else:
+            edit.setStyleSheet(bgd_color)
+    elif isinstance(edit, RadioLayout):
+        if edit.currentIndex() != -1:
+            for btn in edit.group.buttons():
+                btn.setStyleSheet("")
+            return True
+        else:
+            for btn in edit.group.buttons():
+                btn.setStyleSheet(bgd_color)
     elif isinstance(edit, QTextEdit):
         if edit.toPlainText():
+            edit.setStyleSheet("")
             return True
+        else:
+            edit.setStyleSheet(bgd_color)
     return False
 
 class FormWidget(QWidget):
@@ -501,6 +525,7 @@ class FormWidget(QWidget):
 
             # Eventually catching the 'required' feature and processing it
             if label.endswith(' *'):
+                label = label[:-1] + '<font color="red">*</font>'
                 if isinstance(field, (QLineEdit, QTextEdit, QComboBox,
                                       FileLayout, RadioLayout)):
                     dialog = self.get_dialog()
