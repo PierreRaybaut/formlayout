@@ -15,11 +15,13 @@ import datetime
 from formlayout import fedit
 
 def create_datalist_example(json=False):
-    test = [('str', 'this is a string'),
-            ('str_m', """this is a 
+    test = [('str *', 'this is a string'),
+            ('str_m *', """this is a 
              MULTILINE
              string"""),
-            ('list', [0, '1', '3', '4']),
+            ('file *', 'file'),
+            ('list *', [0, '1', '3', '4']),
+            ('tuple *', (0, '1', '3', '4')),
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
                        ('-.', 'DashDot'), ('-', 'Solid'),
                        ('steps', 'Steps'), (':', 'Dotted')]),
