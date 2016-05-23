@@ -281,6 +281,20 @@ class RadioLayout(QVBoxLayout):
         return self.group.id(self.group.checkedButton())
 
 
+class PushLayout(QHBoxLayout):
+    """Push buttons horizontal layout"""
+    def __init__(self, buttons, parent=None):
+        QHBoxLayout.__init__(self)
+        for button in buttons:
+            label, callback = button
+            self.btn = QPushButton(label)
+            if SIGNAL is None:
+                self.btn.clicked.connect(callback)
+            else:
+                self.connect(self.btn, SIGNAL("clicked()"), callback)
+            self.addWidget(self.btn)
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -433,17 +447,21 @@ class FormWidget(QWidget):
                 self.widgets.append(None)
                 continue
             if label is None:
-                img_fmt = tuple(['.'+str(bytes(ext).decode()) for ext 
-                                 in QImageReader.supportedImageFormats()])
-                if value.endswith(img_fmt):
-                    # Image
-                    pixmap = QPixmap(value)
-                    lab = QLabel()
-                    lab.setPixmap(pixmap)
-                    self.formlayout.addRow(lab)
+                if isinstance(value, (list, tuple)):
+                    field = PushLayout(value, self)
+                    self.formlayout.addRow(field)
                 else:
-                    # Comment
-                    self.formlayout.addRow(QLabel(value))
+                    img_fmt = tuple(['.'+str(bytes(ext).decode()) for ext 
+                                 in QImageReader.supportedImageFormats()])
+                    if value.endswith(img_fmt):
+                        # Image
+                        pixmap = QPixmap(value)
+                        lab = QLabel()
+                        lab.setPixmap(pixmap)
+                        self.formlayout.addRow(lab)
+                    else:
+                        # Comment
+                        self.formlayout.addRow(QLabel(value))
                 self.widgets.append(None)
                 continue
             if tuple_to_qfont(value) is not None:

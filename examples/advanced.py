@@ -26,6 +26,7 @@ def create_datalist_example(json=False):
                        ('-.', 'DashDot'), ('-', 'Solid'),
                        ('steps', 'Steps'), (':', 'Dotted')]),
             ('float', 1.2),
+            (None, [('fi&rst', first_function), ('s&econd', second_function)]),
             (None, 'Other:'),
             ('int', 12),
             ('font', ('Arial', 10, False, True)),
@@ -48,6 +49,12 @@ def create_datagroup_example(json=False):
 
 def apply_function(result):
     print(result)
+
+def first_function():
+    print('first')
+
+def second_function():
+    print('second')
 
 #--------- datalist example
 datalist = create_datalist_example()
