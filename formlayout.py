@@ -646,7 +646,10 @@ class FormWidget(QWidget):
                     label = label[:-2]
                     required = 'true'
                 child = ET.SubElement(form, label)
-                child.text = str(value)
+                if isinstance(value, datetime.datetime):
+                    child.text = value.isoformat()
+                else:
+                    child.text = str(value)
                 child.attrib['required'] = required
             return ET.tostring(form)
 
