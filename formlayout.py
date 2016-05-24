@@ -629,7 +629,11 @@ class FormWidget(QWidget):
                     print("Warning: '%s' is duplicate and '%s' doesn't "\
                           "handle it, you should use 'list' or 'XML' instead"\
                           % (label, self.result), file=STDERR)
-                dic[label] = value
+                if isinstance(value, (datetime.date, datetime.datetime)) and \
+                                                     self.result == 'JSON':
+                    dic[label] = str(value)
+                else:
+                    dic[label] = value
             if self.result == 'JSON':
                 return json.dumps(dic)
             else:
