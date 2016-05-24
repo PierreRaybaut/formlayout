@@ -641,8 +641,13 @@ class FormWidget(QWidget):
         elif self.result == 'XML':
             form = ET.Element('Form')
             for label, value in valuelist:
+                required = 'false'
+                if label.endswith(' *'):
+                    label = label[:-2]
+                    required = 'true'
                 child = ET.SubElement(form, label)
                 child.text = str(value)
+                child.attrib['required'] = required
             return ET.tostring(form)
 
 
