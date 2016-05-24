@@ -32,6 +32,7 @@ def create_datalist_example():
             ('color', '#123409'),
             ('bool', True),
             ('date', datetime.date(2010, 10, 10)),
+            ('time', datetime.time(12, 30)),
             ('datetime', datetime.datetime(2010, 10, 10)),
             ]
     return test
