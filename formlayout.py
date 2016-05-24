@@ -271,14 +271,14 @@ class RadioLayout(QVBoxLayout):
         QVBoxLayout.__init__(self)
         self.group = QButtonGroup()
         for i, button in enumerate(buttons):
-            self.btn = QRadioButton(button)
+            btn = QRadioButton(button)
             if i == index:
-                self.btn.setChecked(True)
-            self.addWidget(self.btn)
-            self.group.addButton(self.btn, i)
+                btn.setChecked(True)
+            self.addWidget(btn)
+            self.group.addButton(btn, i)
 
     def currentIndex(self):
-        return self.group.id(self.group.checkedButton())
+        return self.group.checkedId()
 
 
 def font_is_installed(font):
