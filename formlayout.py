@@ -514,6 +514,9 @@ class FormWidget(QWidget):
             elif isinstance(value, datetime.date):
                 field = QDateEdit(self)
                 field.setDate(value)
+            elif isinstance(value, datetime.time):
+                field = QTimeEdit(self)
+                field.setTime(value)
             else:
                 field = QLineEdit(repr(value), self)
             
@@ -614,6 +617,12 @@ class FormWidget(QWidget):
                     value = value.toPyDate()  # PyQt
                 except AttributeError:
                     value = value.toPython()  # PySide
+            elif isinstance(value, datetime.time):
+                value = field.time()
+                try:
+                    value = value.toPyTime()  # PyQt
+                except AttributeError:
+                    value = value.toPython()  # PySide
             else:
                 value = eval(str(field.text()))
             valuelist.append((label, value))
@@ -629,8 +638,8 @@ class FormWidget(QWidget):
                     print("Warning: '%s' is duplicate and '%s' doesn't "\
                           "handle it, you should use 'list' or 'XML' instead"\
                           % (label, self.result), file=STDERR)
-                if isinstance(value, (datetime.date, datetime.datetime)) and \
-                                                     self.result == 'JSON':
+                if isinstance(value, (datetime.date, datetime.time,
+                              datetime.datetime)) and self.result == 'JSON':
                     dic[label] = str(value)
                 else:
                     dic[label] = value
