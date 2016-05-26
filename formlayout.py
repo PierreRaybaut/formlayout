@@ -259,7 +259,8 @@ class FileLayout(QHBoxLayout):
                                                filter=self.value[5:])
         elif self.value == 'dir':
             name = QFileDialog.getExistingDirectory(None, 'Select directory')
-        self.lineedit.setText(name)
+        if name:
+            self.lineedit.setText(name)
 
     def text(self):
         return self.lineedit.text()
