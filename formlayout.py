@@ -241,6 +241,10 @@ class ColorLayout(QHBoxLayout):
     def text(self):
         return self.lineedit.text()
 
+    def setStyleSheet(self, style):
+        self.lineedit.setStyleSheet(style)
+        self.colorbtn.setStyleSheet(style)
+
 
 class FileLayout(QHBoxLayout):
     """File-specialized QLineEdit layout"""
@@ -264,6 +268,10 @@ class FileLayout(QHBoxLayout):
     def text(self):
         return self.lineedit.text()
 
+    def setStyleSheet(self, style):
+        self.lineedit.setStyleSheet(style)
+        self.filebtn.setStyleSheet(style)
+
 
 class RadioLayout(QVBoxLayout):
     """Radio buttons layout with QButtonGroup"""
@@ -279,6 +287,10 @@ class RadioLayout(QVBoxLayout):
 
     def currentIndex(self):
         return self.group.checkedId()
+
+    def setStyleSheet(self, style):
+        for btn in self.group.buttons():
+            btn.setStyleSheet(style)
 
 
 def font_is_installed(font):
@@ -353,6 +365,12 @@ class FontLayout(QGridLayout):
         font.setPointSize(int(self.size.currentText()))
         return qfont_to_tuple(font)
 
+    def setStyleSheet(self, style):
+        self.family.setStyleSheet(style)
+        self.size.setStyleSheet(style)
+        self.italic.setStyleSheet(style)
+        self.bold.setStyleSheet(style)
+
 
 def is_float_valid(edit):
     text = edit.text()
@@ -361,32 +379,18 @@ def is_float_valid(edit):
 
 def is_required_valid(edit):
     bgd_color = "background-color:rgb(255, 175, 90);"
-    if isinstance(edit, QLineEdit):
+    if isinstance(edit, (QLineEdit, FileLayout)):
         if edit.text():
             edit.setStyleSheet("")
             return True
         else:
             edit.setStyleSheet(bgd_color)
-    elif isinstance(edit, FileLayout):
-        if edit.text():
-            edit.lineedit.setStyleSheet("")
-            return True
-        else:
-            edit.lineedit.setStyleSheet(bgd_color)
-    elif isinstance(edit, QComboBox):
+    elif isinstance(edit, (QComboBox, RadioLayout)):
         if edit.currentIndex() != -1:
             edit.setStyleSheet("")
             return True
         else:
             edit.setStyleSheet(bgd_color)
-    elif isinstance(edit, RadioLayout):
-        if edit.currentIndex() != -1:
-            for btn in edit.group.buttons():
-                btn.setStyleSheet("")
-            return True
-        else:
-            for btn in edit.group.buttons():
-                btn.setStyleSheet(bgd_color)
     elif isinstance(edit, QTextEdit):
         if edit.toPlainText():
             edit.setStyleSheet("")
