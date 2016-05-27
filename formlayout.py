@@ -274,24 +274,22 @@ class FileLayout(QHBoxLayout):
         self.filebtn.setStyleSheet(style)
 
 
-class RadioLayout(QVBoxLayout):
-    """Radio buttons layout with QButtonGroup"""
+class RadioLayout(QFrame):
+    """Radio buttons layout in a QFrame with QButtonGroup"""
     def __init__(self, buttons, index, parent=None):
-        QVBoxLayout.__init__(self)
+        QFrame.__init__(self)
+        layout = QVBoxLayout()
         self.group = QButtonGroup()
         for i, button in enumerate(buttons):
             btn = QRadioButton(button)
             if i == index:
                 btn.setChecked(True)
-            self.addWidget(btn)
+            layout.addWidget(btn)
             self.group.addButton(btn, i)
+        self.setLayout(layout)
 
     def currentIndex(self):
         return self.group.checkedId()
-
-    def setStyleSheet(self, style):
-        for btn in self.group.buttons():
-            btn.setStyleSheet(style)
 
 
 def font_is_installed(font):
