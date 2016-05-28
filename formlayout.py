@@ -278,6 +278,7 @@ class RadioLayout(QVBoxLayout):
     """Radio buttons layout with QButtonGroup"""
     def __init__(self, buttons, index, parent=None):
         QVBoxLayout.__init__(self)
+        self.setSpacing(0)
         self.group = QButtonGroup()
         for i, button in enumerate(buttons):
             btn = QRadioButton(button)
