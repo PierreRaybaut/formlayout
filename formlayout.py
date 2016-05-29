@@ -776,7 +776,7 @@ class FormTabWidget(QWidget):
 class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
-                 apply=None, ok=None, cancel=None, result=None):
+                 apply=None, ok=None, cancel=None, result=None, outfile=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -797,6 +797,7 @@ class FormDialog(QDialog):
         elif apply is not None:
             raise AssertionError("`apply` argument must be either a function "\
                                  "or tuple ('Apply label', apply_callback)")
+        self.outfile = outfile
         self.result = result
         if self.result in ['OrderedDict', 'JSON']:
             global OrderedDict
@@ -924,11 +925,25 @@ class FormDialog(QDialog):
         """Return form result"""
         # It is import to avoid accessing Qt C++ object as it has probably
         # already been destroyed, due to the Qt.WA_DeleteOnClose attribute
-        return self.data
+        if self.outfile:
+            if self.result in ['list', 'dict', 'OrderedDict']:
+                fd = open(self.outfile + '.py', 'w')
+                fd.write(str(self.data))
+            elif self.result == 'JSON':
+                fd = open(self.outfile + '.json', 'w')
+                json.dump(json.loads(self.data), fd)
+            elif self.result == 'XML':
+                fd = open(self.outfile + '.xml', 'w')
+                root = ET.fromstring(self.data)
+                tree = ET.ElementTree(root)
+                tree.write(fd)
+            fd.close()
+        else:
+            return self.data
 
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
-          ok=True, cancel=True, result='list'):
+          ok=True, cancel=True, result='list', outfile=None):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -943,6 +958,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param tuple apply: (label, function) customized button label and callback
     :param function apply: apply callback
     :param str result: result serialization ('list', 'dict', 'OrderedDict' or 'JSON')
+    :param str outfile: write result to the file outfile.[py|json|xml]
 
     :return: Serialized result (data type depends on `result` parameter)
     
@@ -981,7 +997,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
         _app.installTranslator(translator_qt)
 
     dialog = FormDialog(data, title, comment, icon, parent,
-                        apply, ok, cancel, result)
+                        apply, ok, cancel, result, outfile)
     if dialog.exec_():
         return dialog.get()
 
