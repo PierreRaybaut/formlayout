@@ -645,7 +645,7 @@ class FormWidget(QWidget):
                           % (label, self.result), file=STDERR)
                 if isinstance(value, (datetime.date, datetime.time,
                               datetime.datetime)) and self.result == 'JSON':
-                    dic[label] = str(value)
+                    dic[label] = value.isoformat()
                 else:
                     dic[label] = value
             if self.result == 'JSON':
