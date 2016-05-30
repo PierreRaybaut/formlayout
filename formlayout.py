@@ -707,7 +707,8 @@ class FormComboWidget(QWidget):
                 dic = OrderedDict()
             for title, widget in self.widgetlist:
                 if self.result == 'JSON':
-                    dic[title] = json.loads(widget.get())
+                    dic[title] = json.loads(widget.get(),
+                                            object_pairs_hook=OrderedDict)
                 else:
                     dic[title] = widget.get()
             if self.result == 'JSON':
@@ -756,7 +757,8 @@ class FormTabWidget(QWidget):
                 dic = OrderedDict()
             for title, widget in self.widgetlist:
                 if self.result == 'JSON':
-                    dic[title] = json.loads(widget.get())
+                    dic[title] = json.loads(widget.get(),
+                                            object_pairs_hook=OrderedDict)
                 else:
                     dic[title] = widget.get()
             if self.result == 'JSON':
@@ -931,7 +933,8 @@ class FormDialog(QDialog):
                 fd.write(str(self.data))
             elif self.result == 'JSON':
                 fd = open(self.outfile + '.json', 'w')
-                json.dump(json.loads(self.data), fd)
+                data = json.loads(self.data, object_pairs_hook=OrderedDict)
+                json.dump(data, fd)
             elif self.result == 'XML':
                 fd = open(self.outfile + '.xml', 'w')
                 root = ET.fromstring(self.data)
