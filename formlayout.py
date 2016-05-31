@@ -294,6 +294,68 @@ class RadioLayout(QVBoxLayout):
             btn.setStyleSheet(style)
 
 
+class PlusLayout(QVBoxLayout):
+    """Field with a '+' PushButton in a QVBoxLayout"""
+    def __init__(self, field, value, parent=None):
+        QVBoxLayout.__init__(self)
+        self.field = field
+        self.value = value
+        self.style = ''
+        hbox = QHBoxLayout()
+        plusbtn = QPushButton('+')
+        plusbtn.setFixedSize(20, 20)
+        plusbtn.clicked.connect(self.addfield)
+        hbox.addWidget(self.field)
+        hbox.addWidget(plusbtn)
+        self.addLayout(hbox)
+
+    def addfield(self):
+        if isinstance(self.field, QLineEdit):
+            if self.value == 'password':
+                field = QLineEdit()
+                field.setEchoMode(QLineEdit.Password)
+            else:
+                field = QLineEdit(self.value)
+        hbox = MoinsLayout(field, self)
+        self.addLayout(hbox)
+
+    def items(self):
+        items = [to_text_string(self.field.text())]
+        for i in range(1, self.count()):
+            items.append(to_text_string(self.itemAt(i).field.text()))
+        if len(items) == 1:
+            return items[0]
+        return items
+
+    def setStyleSheet(self, style):
+        self.style = style
+        self.field.setStyleSheet(self.style)
+        for i in range(1, self.count()):
+            self.itemAt(i).setStyleSheet(self.style)
+
+
+class MoinsLayout(QHBoxLayout):
+    """Field with a '-' PushButton"""
+    def __init__(self, field, parent=None):
+        QHBoxLayout.__init__(self)
+        self.field = field
+        self.parent = parent
+        self.moinsbtn = QPushButton('-')
+        self.moinsbtn.setFixedSize(20, 20)
+        self.moinsbtn.clicked.connect(self.removefield)
+        self.addWidget(self.field)
+        self.addWidget(self.moinsbtn)
+        self.setStyleSheet(parent.style)
+
+    def removefield(self):
+        self.field.close()
+        self.moinsbtn.close()
+        self.parent.removeItem(self)
+
+    def setStyleSheet(self, style):
+        self.field.setStyleSheet(style)
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -524,6 +586,15 @@ class FormWidget(QWidget):
                 field.setTime(value)
             else:
                 field = QLineEdit(repr(value), self)
+
+            # Eventually catching the 'addfield' feature and processing it
+            if label.endswith(' +'):
+                label = label[:-2]
+                if isinstance(field, QLineEdit) and is_text_string(value):
+                    field = PlusLayout(field, value)
+                else:
+                    print("Warning: '%s' doesn't support 'addfield' feature"\
+                          % label, file=STDERR)
             
             # Eventually extracting tooltip from label and processing it
             index = label.find('::')
@@ -587,6 +658,10 @@ class FormWidget(QWidget):
             if label is None:
                 # Separator / Comment
                 continue
+            if label.endswith(' +'):
+                label = label[:-2]
+            if isinstance(field, PlusLayout):
+                value = field.items()
             elif tuple_to_qfont(value) is not None:
                 value = field.get_font()
             elif is_text_string(value):
@@ -659,12 +734,18 @@ class FormWidget(QWidget):
                 if label.endswith(' *'):
                     label = label[:-2]
                     required = 'true'
-                child = ET.SubElement(form, label)
-                if isinstance(value, datetime.datetime):
-                    child.text = value.isoformat()
+                if isinstance(value, list):
+                    for v in value:
+                        child = ET.SubElement(form, label)
+                        child.text = str(v)
+                        child.attrib['required'] = required
                 else:
-                    child.text = str(value)
-                child.attrib['required'] = required
+                    child = ET.SubElement(form, label)
+                    if isinstance(value, datetime.datetime):
+                        child.text = value.isoformat()
+                    else:
+                        child.text = str(value)
+                    child.attrib['required'] = required
             return ET.tostring(form)
 
 

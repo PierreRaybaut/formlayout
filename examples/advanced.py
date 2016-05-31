@@ -16,6 +16,7 @@ from formlayout import fedit
 
 def create_datalist_example():
     test = [('str *', 'this is a string'),
+            ('str +', 'how many strings ?'),
             ('str_m *', """this is a 
              MULTILINE
              string"""),
