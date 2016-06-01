@@ -960,7 +960,8 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str cancel: customized cancel button label
     :param tuple apply: (label, function) customized button label and callback
     :param function apply: apply callback
-    :param str result: result serialization ('list', 'dict', 'OrderedDict' or 'JSON')
+    :param str result: result serialization ('list', 'dict', 'OrderedDict',
+                                             'JSON' or 'XML')
     :param str outfile: write result to the file outfile.[py|json|xml]
 
     :return: Serialized result (data type depends on `result` parameter)
