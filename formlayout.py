@@ -328,33 +328,25 @@ class PlusLayout(QVBoxLayout):
 
     def items(self):
         if is_text_string(self.save_value):
-            items = [to_text_string(self.field.text())]
-            for i in range(1, self.count()):
-                items.append(to_text_string(self.itemAt(i).field.text()))
-            if len(items) == 1:
-                return items[0]
-            return items
+            items = [to_text_string(self.field.text())] +\
+                    [to_text_string(self.itemAt(i).field.text())\
+                    for i in range(1, self.count())]
         elif isinstance(self.save_value, list):
-            index = self.field.currentIndex()
-            if isinstance(self.save_value[0], int):
-                value = index + 1
-            else:
-                value = self.save_value[index+1]
-                if isinstance(value, (list, tuple)):
-                    value = value[0]
-            items = [value]
-            for i in range(1, self.count()):
-                index = self.itemAt(i).field.currentIndex()
+            indexes = [self.field.currentIndex()] +\
+                      [self.itemAt(i).field.currentIndex()\
+                      for i in range(1, self.count())]
+            items = []
+            for index in indexes:
                 if isinstance(self.save_value[0], int):
-                    v = index + 1
+                    value = index + 1
                 else:
-                    v = self.save_value[index+1]
-                    if isinstance(v, (list, tuple)):
-                        v = v[0]
-                items.append(v)
-            if len(items) == 1:
-                return items[0]
-            return items
+                    value = self.save_value[index+1]
+                    if isinstance(value, (list, tuple)):
+                        value = value[0]
+                items.append(value)
+        if len(items) == 1:
+            return items[0]
+        return items
 
     def setStyleSheet(self, style):
         self.style = style
