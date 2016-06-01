@@ -999,6 +999,12 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
                        QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         _app.installTranslator(translator_qt)
 
+    serial = ['list', 'dict', 'OrderedDict', 'JSON', 'XML']
+    if result not in serial:
+        print("Warning: '%s' not in %s, default to list" %
+              (result, ', '.join(serial)), file=sys.stderr)
+        result = 'list'
+
     dialog = FormDialog(data, title, comment, icon, parent,
                         apply, ok, cancel, result, outfile)
     if dialog.exec_():
