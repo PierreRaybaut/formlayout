@@ -16,12 +16,13 @@ from formlayout import fedit
 
 def create_datalist_example():
     test = [('str *', 'this is a string'),
-            ('str +', 'how many strings ?'),
+            ('str +', 'this is a string'),
             ('str_m *', """this is a 
              MULTILINE
              string"""),
             ('file *', 'file'),
             ('list *', [0, '1', '3', '4']),
+            ('list +', [0, '1', '3', '4']),
             ('tuple *', (0, '1', '3', '4')),
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
                        ('-.', 'DashDot'), ('-', 'Solid'),

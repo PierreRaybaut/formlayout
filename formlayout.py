@@ -296,11 +296,14 @@ class RadioLayout(QVBoxLayout):
 
 class PlusLayout(QVBoxLayout):
     """Field with a '+' PushButton in a QVBoxLayout"""
-    def __init__(self, field, value, parent=None):
+    def __init__(self, field, value, save_value, parent=None):
         QVBoxLayout.__init__(self)
         self.field = field
         self.value = value
+        self.save_value = save_value
         self.style = ''
+        if isinstance(self.field, QComboBox):
+            self.index = field.currentIndex()
         hbox = QHBoxLayout()
         plusbtn = QPushButton('+')
         plusbtn.setFixedSize(20, 20)
@@ -316,16 +319,42 @@ class PlusLayout(QVBoxLayout):
                 field.setEchoMode(QLineEdit.Password)
             else:
                 field = QLineEdit(self.value)
+        elif isinstance(self.field, QComboBox):
+            field = QComboBox()
+            field.addItems(self.value)
+            field.setCurrentIndex(self.index)
         hbox = MoinsLayout(field, self)
         self.addLayout(hbox)
 
     def items(self):
-        items = [to_text_string(self.field.text())]
-        for i in range(1, self.count()):
-            items.append(to_text_string(self.itemAt(i).field.text()))
-        if len(items) == 1:
-            return items[0]
-        return items
+        if is_text_string(self.save_value):
+            items = [to_text_string(self.field.text())]
+            for i in range(1, self.count()):
+                items.append(to_text_string(self.itemAt(i).field.text()))
+            if len(items) == 1:
+                return items[0]
+            return items
+        elif isinstance(self.save_value, list):
+            index = self.field.currentIndex()
+            if isinstance(self.save_value[0], int):
+                value = index + 1
+            else:
+                value = self.save_value[index+1]
+                if isinstance(value, (list, tuple)):
+                    value = value[0]
+            items = [value]
+            for i in range(1, self.count()):
+                index = self.itemAt(i).field.currentIndex()
+                if isinstance(self.save_value[0], int):
+                    v = index + 1
+                else:
+                    v = self.save_value[index+1]
+                    if isinstance(v, (list, tuple)):
+                        v = v[0]
+                items.append(v)
+            if len(items) == 1:
+                return items[0]
+            return items
 
     def setStyleSheet(self, style):
         self.style = style
@@ -489,6 +518,7 @@ class FormWidget(QWidget):
 
     def setup(self):
         for label, value in self.data:
+            save_value = value
             if DEBUG_FORMLAYOUT:
                 print("value:", value)
             if label is None and value is None:
@@ -533,7 +563,6 @@ class FormWidget(QWidget):
                 else:
                     field = QLineEdit(value, self)
             elif isinstance(value, (list, tuple)):
-                save_value = value
                 value = list(value)  # always needed to protect self.data
                 selindex = value.pop(0)
                 if isinstance(selindex, int):
@@ -590,8 +619,9 @@ class FormWidget(QWidget):
             # Eventually catching the 'addfield' feature and processing it
             if label.endswith(' +'):
                 label = label[:-2]
-                if isinstance(field, QLineEdit) and is_text_string(value):
-                    field = PlusLayout(field, value)
+                if isinstance(field, QLineEdit) and is_text_string(value) or\
+                   isinstance(field, QComboBox):
+                    field = PlusLayout(field, value, save_value)
                 else:
                     print("Warning: '%s' doesn't support 'addfield' feature"\
                           % label, file=STDERR)
