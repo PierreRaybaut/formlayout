@@ -663,7 +663,7 @@ class FormWidget(QWidget):
                 if isinstance(value, datetime.datetime):
                     child.text = value.isoformat()
                 else:
-                    child.text = str(value)
+                    child.text = to_text_string(value)
                 child.attrib['required'] = required
             return ET.tostring(form)
 
@@ -939,7 +939,7 @@ class FormDialog(QDialog):
                 fd = open(self.outfile + '.xml', 'w')
                 root = ET.fromstring(self.data)
                 tree = ET.ElementTree(root)
-                tree.write(fd)
+                tree.write(fd, encoding='UTF-8')
             fd.close()
         else:
             return self.data
