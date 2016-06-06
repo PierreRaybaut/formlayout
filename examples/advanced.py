@@ -12,7 +12,10 @@ Please take a look at formlayout.py for more examples
 """
 
 import datetime
+# for normal usage
 from formlayout import fedit
+# for programming usage
+from formlayout import QLineEdit
 
 def create_datalist_example():
     test = [('str *', 'this is a string'),
@@ -43,8 +46,12 @@ def create_datagroup_example():
             (datalist, "Category 2", "Category 2 comment"),
             (datalist, "Category 3", "Category 3 comment"))
 
-def apply_function(result):
-    print(result)
+def apply_function(result, widgets):
+    print('result:', result)
+    print('widgets:', widgets)
+    for widget in widgets:
+        if isinstance(widget, QLineEdit) and not widget.validator():
+            widget.setText(widget.text() + ' Apply !')
 
 #--------- datalist example
 datalist = create_datalist_example()
