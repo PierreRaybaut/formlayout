@@ -1019,7 +1019,8 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str cancel: customized cancel button label
     :param tuple apply: (label, function) customized button label and callback
     :param function apply: apply callback
-    :param str result: result serialization ('list', 'dict', 'OrderedDict' or 'JSON')
+    :param str result: result serialization ('list', 'dict', 'OrderedDict',
+                                             'JSON' or 'XML')
     :param str outfile: write result to the file outfile.[py|json|xml]
 
     :return: Serialized result (data type depends on `result` parameter)
@@ -1057,6 +1058,12 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
         translator_qt.load('qt_' + QLocale.system().name(),
                        QLibraryInfo.location(QLibraryInfo.TranslationsPath))
         _app.installTranslator(translator_qt)
+
+    serial = ['list', 'dict', 'OrderedDict', 'JSON', 'XML']
+    if result not in serial:
+        print("Warning: '%s' not in %s, default to list" %
+              (result, ', '.join(serial)), file=sys.stderr)
+        result = 'list'
 
     dialog = FormDialog(data, title, comment, icon, parent,
                         apply, ok, cancel, result, outfile)
