@@ -731,6 +731,9 @@ class FormWidget(QWidget):
                 child.attrib['required'] = required
             return ET.tostring(form)
 
+    def get_widgets(self):
+        return self.widgets
+
 
 class FormComboWidget(QWidget):
     def __init__(self, datalist, comment="", parent=None):
@@ -788,6 +791,12 @@ class FormComboWidget(QWidget):
                 combo.append(child)
             return ET.tostring(combos)
 
+    def get_widgets(self):
+        widgets = []
+        for title, widget in self.widgetlist:
+            widgets.extend(widget.get_widgets())
+        return widgets
+
 
 class FormTabWidget(QWidget):
     def __init__(self, datalist, comment="", parent=None):
@@ -837,6 +846,12 @@ class FormTabWidget(QWidget):
                 child = ET.fromstring(widget.get())
                 tab.append(child)
             return ET.tostring(tabs)
+
+    def get_widgets(self):
+        widgets = []
+        for title, widget in self.widgetlist:
+            widgets.extend(widget.get_widgets())
+        return widgets
 
 
 class FormDialog(QDialog):
@@ -992,9 +1007,9 @@ class FormDialog(QDialog):
             app.attrib['title'] = self.title
             child = ET.fromstring(self.formwidget.get())
             app.append(child)
-            self.apply_callback(ET.tostring(app))
+            self.apply_callback(ET.tostring(app), self.formwiget.get_widgets())
         else:
-            self.apply_callback(self.formwidget.get())
+            self.apply_callback(self.formwidget.get(), self.formwidget.get_widgets())
         
     def get(self):
         """Return form result"""
