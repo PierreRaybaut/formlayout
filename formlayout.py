@@ -1007,9 +1007,11 @@ class FormDialog(QDialog):
             app.attrib['title'] = self.title
             child = ET.fromstring(self.formwidget.get())
             app.append(child)
-            self.apply_callback(ET.tostring(app), self.formwiget.get_widgets())
+            self.apply_callback(ET.tostring(app),
+                                self.formwiget.get_widgets())
         else:
-            self.apply_callback(self.formwidget.get(), self.formwidget.get_widgets())
+            self.apply_callback(self.formwidget.get(),
+                                self.formwidget.get_widgets())
         
     def get(self):
         """Return form result"""
@@ -1047,7 +1049,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str ok: customized ok button label
     :param str cancel: customized cancel button label
     :param tuple apply: (label, function) customized button label and callback
-    :param function apply: apply callback
+    :param function apply: function taking two arguments (result, widgets)
     :param str result: result serialization ('list', 'dict', 'OrderedDict',
                                              'JSON' or 'XML')
     :param str outfile: write result to the file outfile.[py|json|xml]
