@@ -70,6 +70,7 @@ print("result:", fedit(datalist, title="Example",
                        ok='Custom &OK button',
                        cancel='Custom &Cancel button',
                        result='dict',
+                       type='questions',
                        scrollbar=True))
 
 #--------- datagroup example

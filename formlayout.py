@@ -456,6 +456,7 @@ class FormWidget(QWidget):
         from copy import deepcopy
         self.data = deepcopy(data)
         self.result = parent.result
+        self.type = parent.type
         self.widgets = []
         self.formlayout = QFormLayout(self)
         if comment:
@@ -634,7 +635,11 @@ class FormWidget(QWidget):
                         self.connect(field.group, SIGNAL('buttonClicked(int)'),
                                      dialog.required_valid)
 
-            self.formlayout.addRow(label, field)
+            if self.type == 'form':
+                self.formlayout.addRow(label, field)
+            elif self.type == 'questions':
+                self.formlayout.addRow(QLabel(label))
+                self.formlayout.addRow(field)
             self.widgets.append(field)
             
     def get(self):
@@ -753,6 +758,7 @@ class FormComboWidget(QWidget):
                          self.stackwidget, SLOT("setCurrentIndex(int)"))
 
         self.result = parent.result 
+        self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
             self.combobox.addItem(title)
@@ -806,6 +812,7 @@ class FormTabWidget(QWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
         self.result = parent.result
+        self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
             if len(data[0])==3:
@@ -858,7 +865,7 @@ class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
                  apply=None, ok=None, cancel=None, result=None, outfile=None,
-                 scrollbar=None):
+                 type=None, scrollbar=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -867,6 +874,7 @@ class FormDialog(QDialog):
         # a segmentation fault on UNIX or an application crash on Windows
         self.setAttribute(Qt.WA_DeleteOnClose)
 
+        self.type = type
         self.title = title
         self.ok = ok
         self.cancel = cancel
@@ -1036,7 +1044,8 @@ class FormDialog(QDialog):
 
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
-          ok=True, cancel=True, result='list', outfile=None, scrollbar=False):
+          ok=True, cancel=True, result='list', outfile=None, type='form',
+          scrollbar=False):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -1053,6 +1062,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str result: result serialization ('list', 'dict', 'OrderedDict',
                                              'JSON' or 'XML')
     :param str outfile: write result to the file outfile.[py|json|xml]
+    :param str type: layout type ('form' or 'questions')
     :param bool scrollbar: vertical scrollbar
 
     :return: Serialized result (data type depends on `result` parameter)
@@ -1097,8 +1107,14 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
               (result, ', '.join(serial)), file=sys.stderr)
         result = 'list'
 
+    layouts = ['form', 'questions']
+    if type not in layouts:
+        print("Warning: '%s' not in %s, default to form" %
+              (type, ', '.join(layouts)), file=sys.stderr)
+        type = 'form'
+
     dialog = FormDialog(data, title, comment, icon, parent,
-                        apply, ok, cancel, result, outfile, scrollbar)
+                        apply, ok, cancel, result, outfile, type, scrollbar)
     if dialog.exec_():
         return dialog.get()
 
