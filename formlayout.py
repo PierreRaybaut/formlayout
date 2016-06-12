@@ -271,7 +271,6 @@ class FileLayout(QHBoxLayout):
 
     def setStyleSheet(self, style):
         self.lineedit.setStyleSheet(style)
-        self.filebtn.setStyleSheet(style)
 
 
 class SliderLayout(QHBoxLayout):
