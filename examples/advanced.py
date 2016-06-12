@@ -62,7 +62,8 @@ print("result:", fedit(datalist, title="Example",
                        apply=('Custom &Apply button', apply_function),
                        ok='Custom &OK button',
                        cancel='Custom &Cancel button',
-                       result='dict'))
+                       result='dict',
+                       scrollbar=True))
 
 #--------- datagroup example
 datagroup = create_datagroup_example()

@@ -842,7 +842,8 @@ class FormTabWidget(QWidget):
 class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
-                 apply=None, ok=None, cancel=None, result=None, outfile=None):
+                 apply=None, ok=None, cancel=None, result=None, outfile=None,
+                 scrollbar=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -886,8 +887,16 @@ class FormDialog(QDialog):
             self.formwidget = FormWidget(data, comment=comment, 
                                          parent=self)
         layout = QVBoxLayout()
-        layout.addWidget(self.formwidget)
-        
+
+        if scrollbar == True:
+            scroll = QScrollArea(parent=self)
+            scroll.setWidgetResizable(True)
+            scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            scroll.setWidget(self.formwidget)
+            layout.addWidget(scroll)
+        else:
+            layout.addWidget(self.formwidget)
+
         self.float_fields = []
         self.required_fields = []
         self.formwidget.setup()
@@ -1010,7 +1019,7 @@ class FormDialog(QDialog):
 
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
-          ok=True, cancel=True, result='list', outfile=None):
+          ok=True, cancel=True, result='list', outfile=None, scrollbar=False):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -1027,6 +1036,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str result: result serialization ('list', 'dict', 'OrderedDict',
                                              'JSON' or 'XML')
     :param str outfile: write result to the file outfile.[py|json|xml]
+    :param bool scrollbar: vertical scrollbar
 
     :return: Serialized result (data type depends on `result` parameter)
     
@@ -1071,7 +1081,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
         result = 'list'
 
     dialog = FormDialog(data, title, comment, icon, parent,
-                        apply, ok, cancel, result, outfile)
+                        apply, ok, cancel, result, outfile, scrollbar)
     if dialog.exec_():
         return dialog.get()
 
