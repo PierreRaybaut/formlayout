@@ -26,6 +26,7 @@ def create_datalist_example():
                        ('-.', 'DashDot'), ('-', 'Solid'),
                        ('steps', 'Steps'), (':', 'Dotted')]),
             ('float', 1.2),
+            (None, [('fi&rst', first_function), ('s&econd', second_function)]),
             (None, 'Other:'),
             ('slider to 30 at 20 with ticks', 'slider:30:@20'),
             ('slider from -100 to 50 at -10', 'slider:-100:50@-10'),
@@ -47,6 +48,12 @@ def create_datagroup_example():
 
 def apply_function(result):
     print(result)
+
+def first_function():
+    print('first')
+
+def second_function():
+    print('second')
 
 #--------- datalist example
 datalist = create_datalist_example()
