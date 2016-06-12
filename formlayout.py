@@ -714,6 +714,10 @@ class FormWidget(QWidget):
         elif self.result == 'XML':
             form = ET.Element('Form')
             for label, value in valuelist:
+                tooltip = ''
+                index = label.find('::')
+                if index != -1:
+                    label, tooltip = label[:index], label[index+2:]
                 required = 'false'
                 if label.endswith(' *'):
                     label = label[:-2]
@@ -722,7 +726,8 @@ class FormWidget(QWidget):
                 if isinstance(value, datetime.datetime):
                     child.text = value.isoformat()
                 else:
-                    child.text = str(value)
+                    child.text = to_text_string(value)
+                child.attrib['tooltip'] = tooltip
                 child.attrib['required'] = required
             return ET.tostring(form)
 
@@ -998,7 +1003,7 @@ class FormDialog(QDialog):
                 fd = open(self.outfile + '.xml', 'w')
                 root = ET.fromstring(self.data)
                 tree = ET.ElementTree(root)
-                tree.write(fd)
+                tree.write(fd, encoding='UTF-8')
             fd.close()
         else:
             return self.data
