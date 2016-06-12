@@ -27,6 +27,8 @@ def create_datalist_example():
                        ('steps', 'Steps'), (':', 'Dotted')]),
             ('float', 1.2),
             (None, 'Other:'),
+            ('slider to 30 at 20 with ticks', 'slider:30:@20'),
+            ('slider from -100 to 50 at -10', 'slider:-100:50@-10'),
             ('int', 12),
             ('font', ('Arial', 10, False, True)),
             ('color', '#123409'),
