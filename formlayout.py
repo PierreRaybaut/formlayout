@@ -334,14 +334,31 @@ class PushLayout(QHBoxLayout):
     """Push buttons horizontal layout"""
     def __init__(self, buttons, parent=None):
         QHBoxLayout.__init__(self)
+        self.result = parent.result
+        self.dialog = parent.get_dialog()
         for button in buttons:
             label, callback = button
             self.btn = QPushButton(label)
             if SIGNAL is None:
-                self.btn.clicked.connect(callback)
+                self.btn.clicked.connect(self.call(callback))
             else:
-                self.connect(self.btn, SIGNAL("clicked()"), callback)
+                self.connect(self.btn, SIGNAL("clicked()"), self.call(callback))
             self.addWidget(self.btn)
+
+    def call(self, callback):
+        return lambda: self.apply(callback)
+
+    def apply(self, callback):
+        if self.result == 'XML':
+            app = ET.Element('App')
+            app.attrib['title'] = self.dialog.title
+            child = ET.fromstring(self.dialog.formwidget.get())
+            app.append(child)
+            callback(ET.tostring(app),
+                     self.dialog.formwidget.get_widgets())
+        else:
+            callback(self.dialog.formwidget.get(),
+                     self.dialog.formwidget.get_widgets())
 
 
 def font_is_installed(font):
