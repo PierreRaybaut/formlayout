@@ -882,7 +882,7 @@ class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
                  apply=None, ok=None, cancel=None, result=None, outfile=None,
-                 type=None, scrollbar=None):
+                 type=None, scrollbar=None, bgd_color=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -915,6 +915,10 @@ class FormDialog(QDialog):
         elif self.result == 'XML':
             global ET
             import xml.etree.ElementTree as ET
+
+        if bgd_color:
+            style = "FormDialog {background-color:" + bgd_color + ";}"
+            self.setStyleSheet(style)
 
         # Form
         if isinstance(data[0][0], (list, tuple)):
@@ -1062,7 +1066,7 @@ class FormDialog(QDialog):
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
           ok=True, cancel=True, result='list', outfile=None, type='form',
-          scrollbar=False):
+          scrollbar=False, bgd_color=None):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -1081,6 +1085,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str outfile: write result to the file outfile.[py|json|xml]
     :param str type: layout type ('form' or 'questions')
     :param bool scrollbar: vertical scrollbar
+    :param str bgd_color: background color
 
     :return: Serialized result (data type depends on `result` parameter)
     
@@ -1130,8 +1135,8 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
               (type, ', '.join(layouts)), file=sys.stderr)
         type = 'form'
 
-    dialog = FormDialog(data, title, comment, icon, parent,
-                        apply, ok, cancel, result, outfile, type, scrollbar)
+    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel,
+                        result, outfile, type, scrollbar, bgd_color)
     if dialog.exec_():
         return dialog.get()
 
