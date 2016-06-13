@@ -1008,7 +1008,7 @@ class FormDialog(QDialog):
             child = ET.fromstring(self.formwidget.get())
             app.append(child)
             self.apply_callback(ET.tostring(app),
-                                self.formwiget.get_widgets())
+                                self.formwidget.get_widgets())
         else:
             self.apply_callback(self.formwidget.get(),
                                 self.formwidget.get_widgets())
