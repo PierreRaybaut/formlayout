@@ -445,26 +445,30 @@ def is_float_valid(edit):
     state = edit.validator().validate(text, 0)[0]
     return state == QDoubleValidator.Acceptable
 
-def is_required_valid(edit):
-    bgd_color = "background-color:rgb(255, 175, 90);"
+def is_required_valid(edit, wgt_color):
+    req_color = "background-color:rgb(255, 175, 90);"
+    if wgt_color:
+        wgt_color = "background-color:" + wgt_color + ";"
+    else:
+        wgt_color = ""
     if isinstance(edit, (QLineEdit, FileLayout)):
         if edit.text():
-            edit.setStyleSheet("")
+            edit.setStyleSheet(wgt_color)
             return True
         else:
-            edit.setStyleSheet(bgd_color)
+            edit.setStyleSheet(req_color)
     elif isinstance(edit, (QComboBox, RadioLayout)):
         if edit.currentIndex() != -1:
-            edit.setStyleSheet("")
+            edit.setStyleSheet(wgt_color)
             return True
         else:
-            edit.setStyleSheet(bgd_color)
+            edit.setStyleSheet(req_color)
     elif isinstance(edit, QTextEdit):
         if edit.toPlainText():
-            edit.setStyleSheet("")
+            edit.setStyleSheet(wgt_color)
             return True
         else:
-            edit.setStyleSheet(bgd_color)
+            edit.setStyleSheet(req_color)
     return False
 
 class FormWidget(QWidget):
@@ -474,6 +478,7 @@ class FormWidget(QWidget):
         self.data = deepcopy(data)
         self.result = parent.result
         self.type = parent.type
+        self.wgt_color = parent.wgt_color
         self.widgets = []
         self.formlayout = QFormLayout(self)
         if comment:
@@ -652,6 +657,10 @@ class FormWidget(QWidget):
                         self.connect(field.group, SIGNAL('buttonClicked(int)'),
                                      dialog.required_valid)
 
+            # Eventually setting the wgt_color
+            if self.wgt_color:
+                field.setStyleSheet("background-color:" + self.wgt_color + ";")
+
             if self.type == 'form':
                 self.formlayout.addRow(label, field)
             elif self.type == 'questions':
@@ -775,6 +784,10 @@ class FormComboWidget(QWidget):
                          self.stackwidget, SLOT("setCurrentIndex(int)"))
 
         self.result = parent.result 
+        self.wgt_color = parent.wgt_color
+        if self.wgt_color:
+            style = "background-color:" + self.wgt_color + ";"
+            self.combobox.setStyleSheet(style)
         self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
@@ -829,6 +842,7 @@ class FormTabWidget(QWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
         self.result = parent.result
+        self.wgt_color = parent.wgt_color
         self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
@@ -882,7 +896,7 @@ class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
                  apply=None, ok=None, cancel=None, result=None, outfile=None,
-                 type=None, scrollbar=None, bgd_color=None):
+                 type=None, scrollbar=None, bgd_color=None, wgt_color=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -916,6 +930,7 @@ class FormDialog(QDialog):
             global ET
             import xml.etree.ElementTree as ET
 
+        self.wgt_color = wgt_color
         if bgd_color:
             style = "FormDialog {background-color:" + bgd_color + ";}"
             self.setStyleSheet(style)
@@ -1004,7 +1019,7 @@ class FormDialog(QDialog):
     def required_valid(self):
         valid = True
         for field in self.required_fields:
-            if not is_required_valid(field):
+            if not is_required_valid(field, self.wgt_color):
                 valid = False
         self.update_buttons(valid)
 
@@ -1066,7 +1081,7 @@ class FormDialog(QDialog):
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
           ok=True, cancel=True, result='list', outfile=None, type='form',
-          scrollbar=False, bgd_color=None):
+          scrollbar=False, bgd_color=None, wgt_color=None):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -1086,6 +1101,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str type: layout type ('form' or 'questions')
     :param bool scrollbar: vertical scrollbar
     :param str bgd_color: background color
+    :param str wgt_color: widgets color
 
     :return: Serialized result (data type depends on `result` parameter)
     
@@ -1136,7 +1152,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
         type = 'form'
 
     dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel,
-                        result, outfile, type, scrollbar, bgd_color)
+                        result, outfile, type, scrollbar, bgd_color, wgt_color)
     if dialog.exec_():
         return dialog.get()
 
