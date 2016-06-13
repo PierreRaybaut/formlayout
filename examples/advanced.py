@@ -56,11 +56,21 @@ def apply_function(result, widgets):
         if isinstance(widget, QLineEdit) and not widget.validator():
             widget.setText(widget.text() + ' Apply !')
 
-def first_function():
+def first_function(result, widgets):
     print('first')
+    print('result:', result)
+    print('widgets:', widgets)
+    for widget in widgets:
+        if isinstance(widget, QLineEdit) and not widget.validator():
+            widget.setText(widget.text() + ' First !')
 
-def second_function():
+def second_function(result, widgets):
     print('second')
+    print('result:', result)
+    print('widgets:', widgets)
+    for widget in widgets:
+        if isinstance(widget, QLineEdit) and not widget.validator():
+            widget.setText(widget.text() + ' Second !')
 
 #--------- datalist example
 datalist = create_datalist_example()
