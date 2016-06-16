@@ -330,6 +330,27 @@ class RadioLayout(QVBoxLayout):
             btn.setStyleSheet(style)
 
 
+class CheckLayout(QVBoxLayout):
+    """Check boxes layout with QButtonGroup"""
+    def __init__(self, boxes, checks, parent=None):
+        QVBoxLayout.__init__(self)
+        self.setSpacing(0)
+        self.group = QButtonGroup()
+        self.group.setExclusive(False)
+        for i, (box, check) in enumerate(zip(boxes, checks)):
+            cbx = QCheckBox(box)
+            cbx.setChecked(eval(check))
+            self.addWidget(cbx)
+            self.group.addButton(cbx, i)
+
+    def values(self):
+        return [cbx.isChecked() for cbx in self.group.buttons()]
+
+    def setStyleSheet(self, style):
+        for cbx in self.group.buttons():
+            cbx.setStyleSheet(style)
+
+
 class PushLayout(QHBoxLayout):
     """Push buttons horizontal layout"""
     def __init__(self, buttons, parent=None):
@@ -545,6 +566,9 @@ class FormWidget(QWidget):
                     field = QTextEdit(value, self)
                 else:
                     field = QLineEdit(value, self)
+            elif isinstance(value, (list, tuple)) and is_text_string(value[0])\
+                                                 and value[0].startswith('0b'):
+                field = CheckLayout(value[1:], value[0][2:], self)
             elif isinstance(value, (list, tuple)):
                 save_value = value
                 value = list(value)  # always needed to protect self.data
@@ -676,6 +700,8 @@ class FormWidget(QWidget):
                     value = field.value()
                 else:
                     value = to_text_string(field.text())
+            elif isinstance(field, CheckLayout):
+                value = field.values()
             elif isinstance(value, (list, tuple)):
                 index = int(field.currentIndex())
                 if isinstance(value[0], int):

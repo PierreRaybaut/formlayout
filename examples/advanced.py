@@ -25,6 +25,7 @@ def create_datalist_example():
             ('file *', 'file'),
             ('list *', [0, '1', '3', '4']),
             ('tuple *', (0, '1', '3', '4')),
+            ('bool list', ['0b110', '1', '3', '4']),
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
                        ('-.', 'DashDot'), ('-', 'Solid'),
                        ('steps', 'Steps'), (':', 'Dotted')]),
