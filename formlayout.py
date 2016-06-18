@@ -361,6 +361,27 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
+class CSVTableModel(QAbstractTableModel):
+    def __init__(self, csvdata, parent=None):
+        QAbstractTableModel.__init__(self, parent)
+        if PY2:
+            self.data = [[el.decode('utf-8') for el in row] for row in csvdata]
+        else:
+            self.data = [row for row in csvdata]
+
+    def rowCount(self, parent):
+        return len(self.data)
+
+    def columnCount(self, parent):
+        return len(self.data[0])
+
+    def data(self, index, role):
+        if index.isValid() and role == Qt.DisplayRole:
+            return self.data[index.row()][index.column()]
+        else:
+            return None
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -518,6 +539,18 @@ class FormWidget(QWidget):
                         lab = QLabel()
                         lab.setPixmap(pixmap)
                         self.formlayout.addRow(lab)
+                    elif value.endswith('.csv'):
+                        # CSV file
+                        import csv
+                        if PY2:
+                            csvfile = open(value, 'rb')
+                        else:
+                            csvfile = open(value, 'r')
+                        csvdata = csv.reader(csvfile)
+                        tablemodel = CSVTableModel(csvdata)
+                        table = QTableView()
+                        table.setModel(tablemodel)
+                        self.formlayout.addRow(table)
                     else:
                         # Comment
                         self.formlayout.addRow(QLabel(value))
