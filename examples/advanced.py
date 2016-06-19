@@ -19,7 +19,6 @@ from formlayout import QLineEdit
 
 def create_datalist_example():
     test = [('str *', 'this is a string'),
-            (None, 'table.csv'),
             ('str_m *', """this is a 
              MULTILINE
              string"""),

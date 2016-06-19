@@ -362,18 +362,34 @@ class PushLayout(QHBoxLayout):
 
 
 class CSVTableModel(QAbstractTableModel):
-    def __init__(self, csvdata, parent=None):
+    def __init__(self, csvdata, header, parent=None):
         QAbstractTableModel.__init__(self, parent)
         if PY2:
             self.data = [[el.decode('utf-8') for el in row] for row in csvdata]
         else:
             self.data = [row for row in csvdata]
+        if header in ['_', '/']:
+            self.hdata = self.data.pop(0)
+        elif header == '#':
+            self.hdata = range(1, self.columnCount(parent)+1)
+        if header in ['|', '/']:
+            self.vdata = [row.pop(0) for row in self.data]
+        elif header == '#':
+            self.vdata = range(1, self.rowCount(parent)+1)
 
     def rowCount(self, parent):
         return len(self.data)
 
     def columnCount(self, parent):
         return len(self.data[0])
+
+    def headerData(self, section, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.hdata[section]
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole:
+            return self.vdata[section]
+        else:
+            return None
 
     def data(self, index, role):
         if index.isValid() and role == Qt.DisplayRole:
@@ -542,13 +558,20 @@ class FormWidget(QWidget):
                     elif value.endswith('.csv'):
                         # CSV file
                         import csv
+                        header = None
+                        if value.startswith(('_', '|', '/', '#')):
+                            header, value = value[0], value[1:]
                         if PY2:
                             csvfile = open(value, 'rb')
                         else:
                             csvfile = open(value, 'r')
                         csvdata = csv.reader(csvfile)
-                        tablemodel = CSVTableModel(csvdata)
+                        tablemodel = CSVTableModel(csvdata, header)
                         table = QTableView()
+                        if header in ['_', None]:
+                            table.verticalHeader().hide()
+                        if header in ['|', None]:
+                            table.horizontalHeader().hide()
                         table.setModel(tablemodel)
                         self.formlayout.addRow(table)
                     else:
