@@ -361,6 +361,27 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
+class JSONTreeModel(QStandardItemModel):
+    def __init__(self, jsondata, header, parent=None):
+        QStandardItemModel.__init__(self, parent)
+        self.setHorizontalHeaderLabels([header])
+        parent = self.invisibleRootItem()
+        self.add(jsondata, parent)
+
+    def add(self, data, parent):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                item = QStandardItem(key)
+                parent.appendRow(item)
+                self.add(value, item)
+        elif isinstance(data, list):
+            for el in data:
+                self.add(el, parent)
+        else:
+            item = QStandardItem(data)
+            parent.appendRow(item)
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -518,6 +539,18 @@ class FormWidget(QWidget):
                         lab = QLabel()
                         lab.setPixmap(pixmap)
                         self.formlayout.addRow(lab)
+                    elif value.endswith('.json'):
+                        # JSON file
+                        import json
+                        from collections import OrderedDict
+                        jsonfile = open(value, 'r')
+                        jsondata = json.load(jsonfile,
+                                             object_pairs_hook=OrderedDict)
+                        treemodel = JSONTreeModel(jsondata, value[:-5])
+                        tree = QTreeView()
+                        tree.setModel(treemodel)
+                        tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                        self.formlayout.addRow(tree)
                     else:
                         # Comment
                         self.formlayout.addRow(QLabel(value))

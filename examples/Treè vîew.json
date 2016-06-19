@@ -1,0 +1,15 @@
+{
+"Name": "QuickForm",
+"Authors": 
+  {"french" : ["Pièrre", "Flôrent"],
+   "english" : [
+       {"Brit" : ["John", "Andrew"]},
+       {"US"   : [
+                  "Tim", 
+                  {"William" : ["Will","Bill"]}
+                 ]
+       }
+    ]
+  },
+"Python": ["2", "3"]
+}
