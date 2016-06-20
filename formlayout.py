@@ -382,6 +382,25 @@ class JSONTreeModel(QStandardItemModel):
             parent.appendRow(item)
 
 
+class XMLTreeModel(QStandardItemModel):
+    def __init__(self, xmldata, header, parent=None):
+        QStandardItemModel.__init__(self, parent)
+        self.setHorizontalHeaderLabels([header])
+        parent = self.invisibleRootItem()
+        root = xmldata.getroot()
+        self.add(root, parent)
+
+    def add(self, element, parent):
+        item = QStandardItem(element.tag)
+        parent.appendRow(item)
+        if element.text:
+            itemtext = QStandardItem(element.text)
+            item.appendRow(itemtext)
+        else:
+            for el in element:
+                self.add(el, item)
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -547,6 +566,17 @@ class FormWidget(QWidget):
                         jsondata = json.load(jsonfile,
                                              object_pairs_hook=OrderedDict)
                         treemodel = JSONTreeModel(jsondata, value[:-5])
+                        tree = QTreeView()
+                        tree.setModel(treemodel)
+                        tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                        self.formlayout.addRow(tree)
+                    elif value.endswith('.xml'):
+                        # XML file
+                        global ET
+                        import xml.etree.ElementTree as ET
+                        xmlfile = open(value, 'r')
+                        xmldata = ET.parse(xmlfile)
+                        treemodel = XMLTreeModel(xmldata, value[:-4])
                         tree = QTreeView()
                         tree.setModel(treemodel)
                         tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
