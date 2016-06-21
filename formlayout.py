@@ -393,9 +393,20 @@ class XMLTreeModel(QStandardItemModel):
     def add(self, element, parent):
         item = QStandardItem(element.tag)
         parent.appendRow(item)
+        for key, value in element.attrib.items():
+            itemattrib = QStandardItem(key)
+            item.appendRow(itemattrib)
+            itemleaf = QStandardItem(value)
+            itemattrib.appendRow(itemleaf)
         if element.text:
-            itemtext = QStandardItem(element.text)
-            item.appendRow(itemtext)
+            if not element.attrib:
+                itemtext = QStandardItem(element.text)
+                item.appendRow(itemtext)
+            else:
+                itemtext = QStandardItem('TEXT')
+                item.appendRow(itemtext)
+                itemleaf = QStandardItem(element.text)
+                itemtext.appendRow(itemleaf)
         else:
             for el in element:
                 self.add(el, item)
