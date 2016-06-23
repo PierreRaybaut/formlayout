@@ -398,14 +398,16 @@ class XMLTreeModel(QStandardItemModel):
             item.appendRow(itemattrib)
             itemleaf = QStandardItem(value)
             itemattrib.appendRow(itemleaf)
-        if element.text:
+        if element.text or (element.getchildren() and element[0].tail):
+            text = ET.tostring(element, method='text', encoding='utf-8'
+                                                       ).decode('utf-8')
             if not element.attrib:
-                itemtext = QStandardItem(element.text)
+                itemtext = QStandardItem(text)
                 item.appendRow(itemtext)
             else:
                 itemtext = QStandardItem('TEXT')
                 item.appendRow(itemtext)
-                itemleaf = QStandardItem(element.text)
+                itemleaf = QStandardItem(text)
                 itemtext.appendRow(itemleaf)
         else:
             for el in element:

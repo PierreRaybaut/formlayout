@@ -1,2 +1,2 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<Root><Name>QuickForm</Name><Authors quality='high' sort='language'><french number='1'>Pièrre</french><french number='2'>Flôrent</french><english><Brit>John</Brit><Brit>Andrew</Brit><US>Tim</US><US><William>Will</William><William>Bill</William></US></english></Authors><Python>2</Python><Python>3</Python></Root>
+<Root><Name><b>Q<i>uîck</i>For</b>m</Name><Empty/><Authors quality='high' sort='language'><french number='1'>Pièrre</french><french number='2'>Flôrent</french><english><Brit>John</Brit><Brit>Andrew</Brit><US>Tim</US><US><William>Will</William><William>Bill</William></US></english></Authors><Python>2</Python><Python>3</Python></Root>
