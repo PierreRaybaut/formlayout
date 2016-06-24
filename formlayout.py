@@ -397,6 +397,16 @@ class CSVTableModel(QAbstractTableModel):
         else:
             return None
 
+    def setData(self, index, value, role):
+        if index.isValid() and role == Qt.EditRole:
+            self.data[index.row()][index.column()] = value
+            return True
+        else:
+            return None
+
+    def flags(self, index):
+        return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable
+
 
 def font_is_installed(font):
     """Check if font is installed"""
