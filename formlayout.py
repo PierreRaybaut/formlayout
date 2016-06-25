@@ -365,23 +365,24 @@ class CSVTableModel(QAbstractTableModel):
     def __init__(self, csvdata, header, parent=None):
         QAbstractTableModel.__init__(self, parent)
         if PY2:
-            self.data = [[el.decode('utf-8') for el in row] for row in csvdata]
+            self.tabledata = [[el.decode('utf-8') for el in row]
+                                                  for row in csvdata]
         else:
-            self.data = [row for row in csvdata]
+            self.tabledata = [row for row in csvdata]
         if header in ['_', '/']:
-            self.hdata = self.data.pop(0)
+            self.hdata = self.tabledata.pop(0)
         elif header == '#':
             self.hdata = range(1, self.columnCount(parent)+1)
         if header in ['|', '/']:
-            self.vdata = [row.pop(0) for row in self.data]
+            self.vdata = [row.pop(0) for row in self.tabledata]
         elif header == '#':
             self.vdata = range(1, self.rowCount(parent)+1)
 
     def rowCount(self, parent):
-        return len(self.data)
+        return len(self.tabledata)
 
     def columnCount(self, parent):
-        return len(self.data[0])
+        return len(self.tabledata[0])
 
     def headerData(self, section, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -393,13 +394,13 @@ class CSVTableModel(QAbstractTableModel):
 
     def data(self, index, role):
         if index.isValid() and role == Qt.DisplayRole:
-            return self.data[index.row()][index.column()]
+            return self.tabledata[index.row()][index.column()]
         else:
             return None
 
     def setData(self, index, value, role):
         if index.isValid() and role == Qt.EditRole:
-            self.data[index.row()][index.column()] = value
+            self.tabledata[index.row()][index.column()] = value
             return True
         else:
             return None
