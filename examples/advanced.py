@@ -23,8 +23,6 @@ def create_datalist_example():
              MULTILINE
              string"""),
             ('file *', 'file'),
-            ('dict', {'Name': 'QuickForm',
-                      'Authors': {'French':[u'Pièrre', u'Flôrent']}}),
             ('list *', [0, '1', '3', '4']),
             ('tuple *', (0, '1', '3', '4')),
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
