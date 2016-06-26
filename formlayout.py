@@ -361,12 +361,13 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
-class JSONTreeModel(QStandardItemModel):
-    def __init__(self, jsondata, header, parent=None):
+class DictTreeModel(QStandardItemModel):
+    def __init__(self, data, header=None, parent=None):
         QStandardItemModel.__init__(self, parent)
-        self.setHorizontalHeaderLabels([header])
+        if header:
+            self.setHorizontalHeaderLabels([header])
         parent = self.invisibleRootItem()
-        self.add(jsondata, parent)
+        self.add(data, parent)
 
     def add(self, data, parent):
         if isinstance(data, dict):
@@ -578,7 +579,7 @@ class FormWidget(QWidget):
                         jsonfile = open(value, 'r')
                         jsondata = json.load(jsonfile,
                                              object_pairs_hook=OrderedDict)
-                        treemodel = JSONTreeModel(jsondata, value[:-5])
+                        treemodel = DictTreeModel(jsondata, value[:-5])
                         tree = QTreeView()
                         tree.setModel(treemodel)
                         tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
@@ -647,6 +648,12 @@ class FormWidget(QWidget):
                     field.setCurrentIndex(selindex)
                 elif isinstance(save_value, tuple):
                     field = RadioLayout(value, selindex, self)
+            elif isinstance(value, dict):
+                treemodel = DictTreeModel(value)
+                field = QTreeView()
+                field.header().hide()
+                field.setModel(treemodel)
+                field.setEditTriggers(QAbstractItemView.NoEditTriggers)
             elif isinstance(value, bool):
                 field = QCheckBox(self)
                 field.setCheckState(Qt.Checked if value else Qt.Unchecked)
@@ -761,6 +768,8 @@ class FormWidget(QWidget):
                     value = value[index+1]
                     if isinstance(value, (list, tuple)):
                         value = value[0]
+            elif isinstance(value, dict):
+                pass
             elif isinstance(value, bool):
                 value = field.checkState() == Qt.Checked
             elif isinstance(value, float):
