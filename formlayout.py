@@ -382,6 +382,36 @@ class DictTreeModel(QStandardItemModel):
             item = QStandardItem(data)
             parent.appendRow(item)
 
+    def value(self):
+        parent = self.invisibleRootItem()
+        ret = {}
+        for i in range(parent.rowCount()):
+            child = parent.child(i)
+            key = to_text_string(child.text())
+            ret[key] = self.addvalue(child)
+        return ret
+
+    def addvalue(self, parent):
+        if parent.rowCount() == 1:
+            child = parent.child(0)
+            if child.hasChildren():
+                ret, key = {}, to_text_string(child.text())
+                ret[key] = self.addvalue(child)
+                return ret
+            else:
+                return to_text_string(child.text())
+        else:
+            children = []
+            for i in range(parent.rowCount()):
+                child = parent.child(i)
+                if child.hasChildren():
+                    ret, key = {}, to_text_string(child.text())
+                    ret[key] = self.addvalue(child)
+                    children.append(ret)
+                else:
+                    children.append(to_text_string(child.text()))
+            return children
+
 
 class XMLTreeModel(QStandardItemModel):
     def __init__(self, xmldata, header, parent=None):
@@ -653,7 +683,6 @@ class FormWidget(QWidget):
                 field = QTreeView()
                 field.header().hide()
                 field.setModel(treemodel)
-                field.setEditTriggers(QAbstractItemView.NoEditTriggers)
             elif isinstance(value, bool):
                 field = QCheckBox(self)
                 field.setCheckState(Qt.Checked if value else Qt.Unchecked)
@@ -769,7 +798,7 @@ class FormWidget(QWidget):
                     if isinstance(value, (list, tuple)):
                         value = value[0]
             elif isinstance(value, dict):
-                pass
+                value = field.model().value()
             elif isinstance(value, bool):
                 value = field.checkState() == Qt.Checked
             elif isinstance(value, float):
