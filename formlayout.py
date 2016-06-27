@@ -361,14 +361,17 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
-class CSVTableModel(QAbstractTableModel):
-    def __init__(self, csvdata, header, parent=None):
+class TableModel(QAbstractTableModel):
+    def __init__(self, data, header, parent=None):
         QAbstractTableModel.__init__(self, parent)
-        if PY2:
-            self.tabledata = [[el.decode('utf-8') for el in row]
-                                                  for row in csvdata]
+        if isinstance(data, list):
+            self.tabledata = list(data)
         else:
-            self.tabledata = [row for row in csvdata]
+            if PY2:
+                self.tabledata = [[el.decode('utf-8') for el in row]
+                                                      for row in data]
+            else:
+                self.tabledata = [row for row in data]
         if header in ['_', '/']:
             self.hdata = self.tabledata.pop(0)
         elif header == '#':
@@ -400,6 +403,8 @@ class CSVTableModel(QAbstractTableModel):
 
     def setData(self, index, value, role):
         if index.isValid() and role == Qt.EditRole:
+            if PY2:
+                value = to_text_string(value.toString())
             self.tabledata[index.row()][index.column()] = value
             return True
         else:
@@ -577,13 +582,14 @@ class FormWidget(QWidget):
                         else:
                             csvfile = open(value, 'r')
                         csvdata = csv.reader(csvfile)
-                        tablemodel = CSVTableModel(csvdata, header)
+                        tablemodel = TableModel(csvdata, header)
                         table = QTableView()
                         if header in ['_', None]:
                             table.verticalHeader().hide()
                         if header in ['|', None]:
                             table.horizontalHeader().hide()
                         table.setModel(tablemodel)
+                        table.setEditTriggers(QAbstractItemView.NoEditTriggers)
                         self.formlayout.addRow(table)
                     else:
                         # Comment
@@ -612,6 +618,17 @@ class FormWidget(QWidget):
                     field = QTextEdit(value, self)
                 else:
                     field = QLineEdit(value, self)
+            elif isinstance(value, list) and isinstance(value[0],
+                                                       (list, tuple)):
+                header = None
+                field = QTableView()
+                if isinstance(value[0], tuple):
+                    header = '_'
+                else:
+                    field.horizontalHeader().hide()
+                field.verticalHeader().hide()
+                tablemodel = TableModel(value, header)
+                field.setModel(tablemodel)
             elif isinstance(value, (list, tuple)):
                 save_value = value
                 value = list(value)  # always needed to protect self.data
@@ -743,6 +760,11 @@ class FormWidget(QWidget):
                     value = field.value()
                 else:
                     value = to_text_string(field.text())
+            elif isinstance(value, list) and isinstance(value[0],
+                                                       (list, tuple)):
+                value = list(field.model().tabledata)
+                if hasattr(field.model(), 'hdata'):
+                    value.insert(0, field.model().hdata)
             elif isinstance(value, (list, tuple)):
                 index = int(field.currentIndex())
                 if isinstance(value[0], int):
