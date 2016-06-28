@@ -43,11 +43,17 @@ def create_datalist_example():
             ]
     return test
     
-def create_datagroup_example():
+def create_combogroup_example():
     datalist = create_datalist_example()
-    return ((datalist, "Category 1", "Category 1 comment"),
+    return [(datalist, "Category 1", "Category 1 comment"),
             (datalist, "Category 2", "Category 2 comment"),
-            (datalist, "Category 3", "Category 3 comment"))
+            (datalist, "Category 3", "Category 3 comment")]
+
+def create_tabgroup_example():
+    datalist = create_datalist_example()
+    return ((datalist, "Title 1", "Title 1 comment"),
+            (datalist, "Title 2", "Title 2 comment"),
+            (datalist, "Title 3", "Title 3 comment"))
 
 def apply_function(result, widgets):
     print('result:', result)
@@ -83,14 +89,48 @@ print("result:", fedit(datalist, title="Example",
                        type='questions',
                        scrollbar=True))
 
-#--------- datagroup example
-datagroup = create_datagroup_example()
+#--------- datagroup examples
+datagroup = create_combogroup_example()
 print("result:", fedit(datagroup, "Global title", result='JSON'))
 
-#--------- datagroup inside a datagroup example
+datagroup = create_tabgroup_example()
+print("result:", fedit(datagroup, "Global title", result='JSON'))
+
+#--------- datagroup inside a datagroup examples
 datalist = create_datalist_example()
-datagroup = create_datagroup_example()
+datagroup = create_tabgroup_example()
+print("result:", fedit([(datagroup, "Category 1", "Category 1 comment"),
+                        (datalist, "Category 2", "Category 2 comment"),
+                        (datalist, "Category 3", "Category 3 comment")],
+                        "Global title", result='XML'))
+
+datalist = create_datalist_example()
+datagroup = create_combogroup_example()
 print("result:", fedit(((datagroup, "Title 1", "Tab 1 comment"),
                         (datalist, "Title 2", "Tab 2 comment"),
                         (datalist, "Title 3", "Tab 3 comment")),
+                        "Global title", result='XML'))
+
+datalist = create_datalist_example()
+datagroup = create_combogroup_example()
+print("result:", fedit([(datagroup, "Category 1", "Category 1 comment"),
+                        (datalist, "Category 2", "Category 2 comment"),
+                        (datalist, "Category 3", "Category 3 comment")],
+                        "Global title", result='XML'))
+
+datalist = create_datalist_example()
+datagroup = create_tabgroup_example()
+print("result:", fedit(((datagroup, "Title 1", "Tab 1 comment"),
+                        (datalist, "Title 2", "Tab 2 comment"),
+                        (datalist, "Title 3", "Tab 3 comment")),
+                        "Global title", result='XML'))
+
+datalist = create_datalist_example()
+datagroup = create_tabgroup_example()
+print("result:", fedit((([(datagroup, "Category 1", "Category 1 comment"),
+                          (datalist, "Category 2", "Category 2 comment"),
+                          (datalist, "Category 3", "Category 3 comment")],
+                          "Three", "Three levels"),
+                        (datagroup, "Two", "Two levels"),
+                        (datalist, "One", "One level")),
                         "Global title", result='XML'))
