@@ -422,7 +422,9 @@ class XMLTreeModel(QStandardItemModel):
             item.appendRow(itemattrib)
             itemleaf = QStandardItem(value)
             itemattrib.appendRow(itemleaf)
-        if element.text or (element.getchildren() and element[0].tail):
+        if (element.text and not element.text.isspace()) or (
+            element.getchildren() and element[0].tail
+                                  and not element[0].tail.isspace()):
             text = ET.tostring(element, method='text', encoding='utf-8'
                                                        ).decode('utf-8')
             if not element.attrib:
