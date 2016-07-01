@@ -364,8 +364,10 @@ class PushLayout(QHBoxLayout):
 class DictTreeModel(QStandardItemModel):
     def __init__(self, data, header=None, parent=None):
         QStandardItemModel.__init__(self, parent)
+        self.columns = False
         if header:
-            self.setHorizontalHeaderLabels([header])
+            self.columns = True
+            self.setHorizontalHeaderLabels(header)
         parent = self.invisibleRootItem()
         self.add(data, parent)
 
@@ -374,7 +376,11 @@ class DictTreeModel(QStandardItemModel):
             for key, value in data.items():
                 item = QStandardItem(key)
                 parent.appendRow(item)
-                self.add(value, item)
+                if self.columns and not isinstance(value, (dict,list)):
+                    leaf = QStandardItem(value)
+                    parent.setChild(self.indexFromItem(item).row(), 1, leaf)
+                else:
+                    self.add(value, item)
         elif isinstance(data, list):
             for el in data:
                 self.add(el, parent)
@@ -604,7 +610,11 @@ class FormWidget(QWidget):
                         jsonfile = open(value, 'r')
                         jsondata = json.load(jsonfile,
                                              object_pairs_hook=OrderedDict)
-                        treemodel = DictTreeModel(jsondata, value[:-5])
+                        if '_' in value:
+                            header = value[:-5].split('_')
+                        else:
+                            header = [value[:-5], 'Content']
+                        treemodel = DictTreeModel(jsondata, header)
                         tree = QTreeView()
                         tree.setModel(treemodel)
                         tree.setEditTriggers(QAbstractItemView.NoEditTriggers)

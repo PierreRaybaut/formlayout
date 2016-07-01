@@ -1,7 +1,7 @@
 {
 "Name": "QuickForm",
 "Authors": 
-  {"french" : ["Pièrre", "Flôrent"],
+  {"french" : {"old": "Pièrre", "new": "Flôrent"},
    "english" : [
        {"Brit" : ["John", "Andrew"]},
        {"US"   : [
@@ -11,5 +11,5 @@
        }
     ]
   },
-"Python": ["2", "3"]
+"Python": {"old": "2", "new": "3"}
 }
