@@ -364,6 +364,8 @@ class PushLayout(QHBoxLayout):
 class DictTreeModel(QStandardItemModel):
     def __init__(self, data, header=None, parent=None):
         QStandardItemModel.__init__(self, parent)
+        self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
+        self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
         self.columns = False
         if header:
             self.columns = True
@@ -377,15 +379,18 @@ class DictTreeModel(QStandardItemModel):
                 item = QStandardItem(key)
                 parent.appendRow(item)
                 if self.columns and not isinstance(value, (dict,list)):
+                    item.setIcon(self.ficon)
                     leaf = QStandardItem(value)
                     parent.setChild(self.indexFromItem(item).row(), 1, leaf)
                 else:
+                    item.setIcon(self.dicon)
                     self.add(value, item)
         elif isinstance(data, list):
             for el in data:
                 self.add(el, parent)
         else:
             item = QStandardItem(data)
+            item.setIcon(self.ficon)
             parent.appendRow(item)
 
     def value(self):
@@ -415,6 +420,8 @@ class DictTreeModel(QStandardItemModel):
 class XMLTreeModel(QStandardItemModel):
     def __init__(self, xmldata, header, parent=None):
         QStandardItemModel.__init__(self, parent)
+        self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
+        self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
         self.setHorizontalHeaderLabels([header])
         parent = self.invisibleRootItem()
         root = xmldata.getroot()
@@ -422,6 +429,7 @@ class XMLTreeModel(QStandardItemModel):
 
     def add(self, element, parent):
         item = QStandardItem(element.tag)
+        item.setIcon(self.dicon)
         parent.appendRow(item)
         for key, value in element.attrib.items():
             itemattrib = QStandardItem(key)
@@ -435,9 +443,11 @@ class XMLTreeModel(QStandardItemModel):
                                                        ).decode('utf-8')
             if not element.attrib:
                 itemtext = QStandardItem(text)
+                itemtext.setIcon(self.ficon)
                 item.appendRow(itemtext)
             else:
                 itemtext = QStandardItem('TEXT')
+                itemtext.setIcon(self.ficon)
                 item.appendRow(itemtext)
                 itemleaf = QStandardItem(text)
                 itemtext.appendRow(itemleaf)
