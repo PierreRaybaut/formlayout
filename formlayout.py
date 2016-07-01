@@ -418,11 +418,14 @@ class DictTreeModel(QStandardItemModel):
 
 
 class XMLTreeModel(QStandardItemModel):
-    def __init__(self, xmldata, header, parent=None):
+    def __init__(self, xmldata, header=None, parent=None):
         QStandardItemModel.__init__(self, parent)
         self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
         self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
-        self.setHorizontalHeaderLabels([header])
+        self.columns = False
+        if header:
+            self.columns = True
+            self.setHorizontalHeaderLabels(header)
         parent = self.invisibleRootItem()
         root = xmldata.getroot()
         self.add(root, parent)
@@ -435,7 +438,11 @@ class XMLTreeModel(QStandardItemModel):
             itemattrib = QStandardItem(key)
             item.appendRow(itemattrib)
             itemleaf = QStandardItem(value)
-            itemattrib.appendRow(itemleaf)
+            if self.columns:
+                item.setChild(self.indexFromItem(itemattrib).row(), 1,
+                                                                   itemleaf)
+            else:
+                itemattrib.appendRow(itemleaf)
         if (element.text and not element.text.isspace()) or (
             element.getchildren() and element[0].tail
                                   and not element[0].tail.isspace()):
@@ -443,14 +450,24 @@ class XMLTreeModel(QStandardItemModel):
                                                        ).decode('utf-8')
             if not element.attrib:
                 itemtext = QStandardItem(text)
-                itemtext.setIcon(self.ficon)
-                item.appendRow(itemtext)
+                if self.columns:
+                    item.setIcon(self.ficon)
+                    parent.setChild(self.indexFromItem(item).row(), 1,
+                                                                   itemtext)
+                else:
+                    itemtext.setIcon(self.ficon)
+                    item.appendRow(itemtext)
             else:
                 itemtext = QStandardItem('TEXT')
-                itemtext.setIcon(self.ficon)
                 item.appendRow(itemtext)
                 itemleaf = QStandardItem(text)
-                itemtext.appendRow(itemleaf)
+                if self.columns:
+                    itemtext.setIcon(self.ficon)
+                    item.setChild(self.indexFromItem(itemtext).row(), 1,
+                                                                     itemleaf)
+                else:
+                    itemleaf.setIcon(self.ficon)
+                    itemtext.appendRow(itemleaf)
         else:
             for el in element:
                 self.add(el, item)
@@ -635,7 +652,11 @@ class FormWidget(QWidget):
                         import xml.etree.ElementTree as ET
                         xmlfile = open(value, 'r')
                         xmldata = ET.parse(xmlfile)
-                        treemodel = XMLTreeModel(xmldata, value[:-4])
+                        if '_' in value:
+                            header = value[:-4].split('_')
+                        else:
+                            header = [value[:-4], 'Content']
+                        treemodel = XMLTreeModel(xmldata, header)
                         tree = QTreeView()
                         tree.setModel(treemodel)
                         tree.setEditTriggers(QAbstractItemView.NoEditTriggers)

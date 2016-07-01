@@ -27,7 +27,7 @@ datalist = [('dict:', {"Name": "QuickForm",
             (None, 'JSON tree:'),
             (None, u'Treè vîew_Node content.json'),
             (None, 'XML tree:'),
-            (None, u'Treè vîew.xml')
+            (None, u'Treè vîew_Node content.xml')
             ]
 
 print('result:', fedit(datalist, title='Tree examples', type='questions'))
