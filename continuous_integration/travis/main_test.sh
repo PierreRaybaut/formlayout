@@ -10,7 +10,9 @@ export PYTHONPATH=$PWD
 
 python formlayout.py
 
-for f in examples/*.py; do
+cd examples
+
+for f in *.py; do
     python "$f"
     if [ $? -ne 0 ]; then
         exit 1
