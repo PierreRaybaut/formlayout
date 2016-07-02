@@ -376,7 +376,7 @@ def tuple_to_qfont(tup):
         (family [string], size [int], italic [bool], bold [bool])
     """
     if not isinstance(tup, tuple) or len(tup) != 4 \
-       or not isinstance(tup[0], str) \
+       or not is_text_string(tup[0]) \
        or not isinstance(tup[1], int) \
        or not isinstance(tup[2], bool) \
        or not isinstance(tup[3], bool):
