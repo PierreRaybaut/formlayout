@@ -362,14 +362,15 @@ class PushLayout(QHBoxLayout):
 
 
 class DictTreeModel(QStandardItemModel):
-    def __init__(self, data, header=None, parent=None):
+    def __init__(self, data, header=[], parent=None):
         QStandardItemModel.__init__(self, parent)
         self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
         self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
         self.columns = False
-        if header:
-            self.columns = True
+        if len(header) > 0:
             self.setHorizontalHeaderLabels(header)
+        if len(header) > 1:
+            self.columns = True
         parent = self.invisibleRootItem()
         self.add(data, parent)
 
@@ -418,14 +419,15 @@ class DictTreeModel(QStandardItemModel):
 
 
 class XMLTreeModel(QStandardItemModel):
-    def __init__(self, xmldata, header=None, parent=None):
+    def __init__(self, xmldata, header=[], parent=None):
         QStandardItemModel.__init__(self, parent)
         self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
         self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
         self.columns = False
-        if header:
-            self.columns = True
+        if len(header) > 0:
             self.setHorizontalHeaderLabels(header)
+        if len(header) > 1:
+            self.columns = True
         parent = self.invisibleRootItem()
         root = xmldata.getroot()
         self.add(root, parent)
@@ -640,7 +642,7 @@ class FormWidget(QWidget):
                         if '_' in value:
                             header = value[:-5].split('_')
                         else:
-                            header = [value[:-5], 'Content']
+                            header = [value[:-5]]
                         treemodel = DictTreeModel(jsondata, header)
                         tree = QTreeView()
                         tree.setModel(treemodel)
@@ -655,7 +657,7 @@ class FormWidget(QWidget):
                         if '_' in value:
                             header = value[:-4].split('_')
                         else:
-                            header = [value[:-4], 'Content']
+                            header = [value[:-4]]
                         treemodel = XMLTreeModel(xmldata, header)
                         tree = QTreeView()
                         tree.setModel(treemodel)

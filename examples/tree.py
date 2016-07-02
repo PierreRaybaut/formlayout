@@ -25,8 +25,12 @@ datalist = [('dict:', {"Name": "QuickForm",
                        "Python": ["2", "3"]
                        }),
             (None, 'JSON tree:'),
+            (None, u'Treè vîew.json'),
+            (None, 'JSON tree + content:'),
             (None, u'Treè vîew_Node content.json'),
             (None, 'XML tree:'),
+            (None, u'Treè vîew.xml'),
+            (None, 'XML tree + content:'),
             (None, u'Treè vîew_Node content.xml')
             ]
 
