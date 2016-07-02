@@ -308,6 +308,10 @@ class SliderLayout(QHBoxLayout):
     def value(self):
         return self.slider.value()
 
+    def setStyleSheet(self, style):
+        self.slider.setStyleSheet(style)
+        self.cpt.setStyleSheet(style)
+
 
 class RadioLayout(QVBoxLayout):
     """Radio buttons layout with QButtonGroup"""
