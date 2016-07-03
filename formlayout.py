@@ -573,7 +573,7 @@ class FormWidget(QWidget):
                     field = RadioLayout(value, selindex, self)
             elif isinstance(value, bool):
                 field = QCheckBox(self)
-                field.setCheckState(Qt.Checked if value else Qt.Unchecked)
+                field.setChecked(value)
             elif isinstance(value, float):
                 field = QLineEdit(QLocale().toString(value), self)
                 field.setValidator(QDoubleValidator(field))
