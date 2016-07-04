@@ -948,7 +948,7 @@ class FormDialog(QDialog):
         self.bbox = bbox = QDialogButtonBox(self)
         if self.ok == True:
             bbox.addButton(QDialogButtonBox.Ok)
-        elif self.ok:
+        elif self.ok or self.ok == '':
             ok_btn = QPushButton(self.ok)
             bbox.addButton(ok_btn, QDialogButtonBox.AcceptRole)
             if buttonicon == True:
@@ -956,7 +956,7 @@ class FormDialog(QDialog):
                                             QStyle.SP_DialogOkButton))
         if self.cancel == True:
             bbox.addButton(QDialogButtonBox.Cancel)
-        elif self.cancel:
+        elif self.cancel or self.cancel == '':
             cancel_btn = QPushButton(self.cancel)
             bbox.addButton(cancel_btn, QDialogButtonBox.RejectRole)
             if buttonicon == True:
@@ -964,7 +964,7 @@ class FormDialog(QDialog):
                                                 QStyle.SP_DialogCancelButton))
 
         if self.apply_callback is not None:
-            if self.apply_:
+            if self.apply_ or self.apply_ == '':
                 apply_btn = QPushButton(self.apply_)
                 bbox.addButton(apply_btn, QDialogButtonBox.ApplyRole)
             else:
@@ -977,14 +977,14 @@ class FormDialog(QDialog):
                 apply_btn.setIcon(qApp.style().standardIcon(
                                                QStyle.SP_DialogApplyButton))
         if SIGNAL is None:
-            if self.ok:
+            if self.ok or self.ok == '':
                 bbox.accepted.connect(self.accept)
-            if self.cancel:
+            if self.cancel or self.cancel == '':
                 bbox.rejected.connect(self.reject)
         else:
-            if self.ok:
+            if self.ok or self.ok == '':
                 self.connect(bbox, SIGNAL("accepted()"), SLOT("accept()"))
-            if self.cancel:
+            if self.cancel or self.cancel == '':
                 self.connect(bbox, SIGNAL("rejected()"), SLOT("reject()"))
         layout.addWidget(bbox)
         self.required_valid()
