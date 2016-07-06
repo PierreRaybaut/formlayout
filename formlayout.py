@@ -395,24 +395,23 @@ class DictTreeModel(QStandardItemModel):
             parent.appendRow(item)
 
     def value(self):
-        ret, parent = {}, self.invisibleRootItem()
-        for i in range(parent.rowCount()):
-            child = parent.child(i)
-            key = to_text_string(child.text())
-            ret[key] = self.addvalue(child)
-        return ret
+        parent = self.invisibleRootItem()
+        return self.addvalue(parent)
 
     def addvalue(self, parent):
-        children = []
+        children, ret = [], {}
         for i in range(parent.rowCount()):
             child = parent.child(i)
             if child.hasChildren():
-                ret, key = {}, to_text_string(child.text())
+                key = to_text_string(child.text())
                 ret[key] = self.addvalue(child)
-                children.append(ret)
             else:
                 children.append(to_text_string(child.text()))
-        if len(children) == 1:
+        if ret and not children:
+            return ret
+        elif ret:
+            return children + [ret]
+        elif len(children) == 1:
             return children[0]
         else:
             return children
