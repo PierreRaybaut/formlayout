@@ -633,9 +633,9 @@ class FormWidget(QWidget):
                         self.formlayout.addRow(lab)
                     elif value.endswith('.json'):
                         # JSON file
-                        import json
+                        import json, io
                         from collections import OrderedDict
-                        jsonfile = open(value, 'r')
+                        jsonfile = io.open(value, 'r', encoding='utf-8')
                         jsondata = json.load(jsonfile,
                                              object_pairs_hook=OrderedDict)
                         if '_' in value:
