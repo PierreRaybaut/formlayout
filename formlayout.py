@@ -74,6 +74,7 @@ if os.environ['QT_API'] == 'pyqt':
     from PyQt4.QtCore import *  # analysis:ignore
     from PyQt4.QtCore import pyqtSlot as Slot
     from PyQt4.QtCore import pyqtProperty as Property
+    QT_LIB = 'PyQt4'
 
 if os.environ['QT_API'] == 'pyqt5':
     from PyQt5.QtWidgets import *  # analysis:ignore
@@ -83,10 +84,12 @@ if os.environ['QT_API'] == 'pyqt5':
     from PyQt5.QtCore import pyqtSlot as Slot  # analysis:ignore
     from PyQt5.QtCore import pyqtProperty as Property  # analysis:ignore
     SIGNAL = None  # analysis:ignore
+    QT_LIB = 'PyQt5'
 
 if os.environ['QT_API'] == 'pyside':
     from PySide.QtGui import *  # analysis:ignore
     from PySide.QtCore import *  # analysis:ignore
+    QT_LIB = 'PySide'
 
 
 # ---+- Python 2-3 compatibility -+----
@@ -261,6 +264,8 @@ class FileLayout(QHBoxLayout):
         if self.value.startswith('file'):
             name = QFileDialog.getOpenFileName(None, 'Select file',
                                                filter=self.value[5:])
+            if QT_LIB == 'PyQt5':
+                name, _filter = name
         elif self.value == 'dir':
             name = QFileDialog.getExistingDirectory(None, 'Select directory')
         if name:
