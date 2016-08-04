@@ -890,8 +890,8 @@ class FormTabWidget(QWidget):
 class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
-                 apply=None, ok=None, cancel=None, result=None, outfile=None,
-                 type=None, scrollbar=None):
+                 apply=None, ok=None, cancel=None, buttonicon=None,
+                 result=None, outfile=None, type=None, scrollbar=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -951,20 +951,29 @@ class FormDialog(QDialog):
         self.formwidget.setup()
         
         # Button box
-        self.bbox = bbox = QDialogButtonBox()
+        if buttonicon == True:
+            self.setStyleSheet("QDialogButtonBox { "\
+                               "dialogbuttonbox-buttons-have-icons: 1; }")
+        self.bbox = bbox = QDialogButtonBox(self)
         if self.ok == True:
             bbox.addButton(QDialogButtonBox.Ok)
-        elif self.ok:
+        elif self.ok or self.ok == '':
             ok_btn = QPushButton(self.ok)
             bbox.addButton(ok_btn, QDialogButtonBox.AcceptRole)
+            if buttonicon == True:
+                ok_btn.setIcon(qApp.style().standardIcon(
+                                            QStyle.SP_DialogOkButton))
         if self.cancel == True:
             bbox.addButton(QDialogButtonBox.Cancel)
-        elif self.cancel:
+        elif self.cancel or self.cancel == '':
             cancel_btn = QPushButton(self.cancel)
             bbox.addButton(cancel_btn, QDialogButtonBox.RejectRole)
+            if buttonicon == True:
+                cancel_btn.setIcon(qApp.style().standardIcon(
+                                                QStyle.SP_DialogCancelButton))
 
         if self.apply_callback is not None:
-            if self.apply_:
+            if self.apply_ or self.apply_ == '':
                 apply_btn = QPushButton(self.apply_)
                 bbox.addButton(apply_btn, QDialogButtonBox.ApplyRole)
             else:
@@ -973,15 +982,18 @@ class FormDialog(QDialog):
                 apply_btn.clicked.connect(self.apply)
             else:
                 self.connect(apply_btn, SIGNAL("clicked()"), self.apply)
+            if buttonicon == True:
+                apply_btn.setIcon(qApp.style().standardIcon(
+                                               QStyle.SP_DialogApplyButton))
         if SIGNAL is None:
-            if self.ok:
+            if self.ok or self.ok == '':
                 bbox.accepted.connect(self.accept)
-            if self.cancel:
+            if self.cancel or self.cancel == '':
                 bbox.rejected.connect(self.reject)
         else:
-            if self.ok:
+            if self.ok or self.ok == '':
                 self.connect(bbox, SIGNAL("accepted()"), SLOT("accept()"))
-            if self.cancel:
+            if self.cancel or self.cancel == '':
                 self.connect(bbox, SIGNAL("rejected()"), SLOT("reject()"))
         layout.addWidget(bbox)
         self.required_valid()
@@ -1070,8 +1082,8 @@ class FormDialog(QDialog):
 
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
-          ok=True, cancel=True, result='list', outfile=None, type='form',
-          scrollbar=False):
+          ok=True, cancel=True, buttonicon=False, result='list', outfile=None,
+          type='form', scrollbar=False):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -1083,6 +1095,7 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param QWidget parent: parent widget
     :param str ok: customized ok button label
     :param str cancel: customized cancel button label
+    :param bool buttonicon: buttons with standard icons 
     :param tuple apply: (label, function) customized button label and callback
     :param function apply: function taking two arguments (result, widgets)
     :param str result: result serialization ('list', 'dict', 'OrderedDict',
@@ -1139,8 +1152,8 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
               (type, ', '.join(layouts)), file=sys.stderr)
         type = 'form'
 
-    dialog = FormDialog(data, title, comment, icon, parent,
-                        apply, ok, cancel, result, outfile, type, scrollbar)
+    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel,
+                        buttonicon, result, outfile, type, scrollbar)
     if dialog.exec_():
         return dialog.get()
 

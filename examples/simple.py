@@ -28,4 +28,5 @@ datalist = [('Name', 'Paul'),
             ]
 
 print("result:", fedit(datalist, title="Describe yourself",
-                       comment="This is just an <b>example</b>."))
+                       comment="This is just an <b>example</b>.",
+                       buttonicon=True))
