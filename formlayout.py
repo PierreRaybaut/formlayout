@@ -370,6 +370,59 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
+class TableModel(QAbstractTableModel):
+    def __init__(self, data, header, parent=None):
+        QAbstractTableModel.__init__(self, parent)
+        if isinstance(data, list):
+            self.tabledata = list(data)
+        else:
+            if PY2:
+                self.tabledata = [[el.decode('utf-8') for el in row]
+                                                      for row in data]
+            else:
+                self.tabledata = [row for row in data]
+        if header in ['_', '/']:
+            self.hdata = self.tabledata.pop(0)
+        elif header == '#':
+            self.hdata = range(1, self.columnCount(parent)+1)
+        if header in ['|', '/']:
+            self.vdata = [row.pop(0) for row in self.tabledata]
+        elif header == '#':
+            self.vdata = range(1, self.rowCount(parent)+1)
+
+    def rowCount(self, parent):
+        return len(self.tabledata)
+
+    def columnCount(self, parent):
+        return len(self.tabledata[0])
+
+    def headerData(self, section, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self.hdata[section]
+        elif orientation == Qt.Vertical and role == Qt.DisplayRole:
+            return self.vdata[section]
+        else:
+            return None
+
+    def data(self, index, role):
+        if index.isValid() and role == Qt.DisplayRole:
+            return self.tabledata[index.row()][index.column()]
+        else:
+            return None
+
+    def setData(self, index, value, role):
+        if index.isValid() and role == Qt.EditRole:
+            if PY2:
+                value = to_text_string(value.toString())
+            self.tabledata[index.row()][index.column()] = value
+            return True
+        else:
+            return None
+
+    def flags(self, index):
+        return QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -527,6 +580,26 @@ class FormWidget(QWidget):
                         lab = QLabel()
                         lab.setPixmap(pixmap)
                         self.formlayout.addRow(lab)
+                    elif value.endswith('.csv'):
+                        # CSV file
+                        import csv
+                        header = None
+                        if value.startswith(('_', '|', '/', '#')):
+                            header, value = value[0], value[1:]
+                        if PY2:
+                            csvfile = open(value, 'rb')
+                        else:
+                            csvfile = open(value, 'r')
+                        csvdata = csv.reader(csvfile)
+                        tablemodel = TableModel(csvdata, header)
+                        table = QTableView()
+                        if header in ['_', None]:
+                            table.verticalHeader().hide()
+                        if header in ['|', None]:
+                            table.horizontalHeader().hide()
+                        table.setModel(tablemodel)
+                        table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                        self.formlayout.addRow(table)
                     else:
                         # Comment
                         self.formlayout.addRow(QLabel(value))
@@ -554,6 +627,17 @@ class FormWidget(QWidget):
                     field = QTextEdit(value, self)
                 else:
                     field = QLineEdit(value, self)
+            elif isinstance(value, list) and isinstance(value[0],
+                                                       (list, tuple)):
+                header = None
+                field = QTableView()
+                if isinstance(value[0], tuple):
+                    header = '_'
+                else:
+                    field.horizontalHeader().hide()
+                field.verticalHeader().hide()
+                tablemodel = TableModel(value, header)
+                field.setModel(tablemodel)
             elif isinstance(value, (list, tuple)):
                 save_value = value
                 value = list(value)  # always needed to protect self.data
@@ -685,6 +769,11 @@ class FormWidget(QWidget):
                     value = field.value()
                 else:
                     value = to_text_string(field.text())
+            elif isinstance(value, list) and isinstance(value[0],
+                                                       (list, tuple)):
+                value = list(field.model().tabledata)
+                if hasattr(field.model(), 'hdata'):
+                    value.insert(0, field.model().hdata)
             elif isinstance(value, (list, tuple)):
                 index = int(field.currentIndex())
                 if isinstance(value[0], int):
