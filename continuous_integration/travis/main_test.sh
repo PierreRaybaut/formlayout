@@ -12,6 +12,8 @@ python formlayout.py
 
 cd examples
 
+ln -s ../formlayout.py formlayout.py
+
 for f in *.py; do
     python "$f"
     if [ $? -ne 0 ]; then
