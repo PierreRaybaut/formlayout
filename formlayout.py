@@ -788,7 +788,12 @@ class FormComboWidget(QWidget):
         self.widgetlist = []
         for data, title, comment in datalist:
             self.combobox.addItem(title)
-            widget = FormWidget(data, comment=comment, parent=self)
+            if isinstance(data, tuple) and len(data[0]) == 3:
+                widget = FormTabWidget(data, comment=comment, parent=self)
+            elif isinstance(data, list) and len(data[0]) == 3:
+                widget = FormComboWidget(data, comment=comment, parent=self)
+            else:
+                widget = FormWidget(data, comment=comment, parent=self)
             self.stackwidget.addWidget(widget)
             self.widgetlist.append((title, widget))
             
@@ -841,7 +846,9 @@ class FormTabWidget(QWidget):
         self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
-            if len(data[0])==3:
+            if isinstance(data, tuple) and len(data[0]) == 3:
+                widget = FormTabWidget(data, comment=comment, parent=self)
+            elif isinstance(data, list) and len(data[0]) == 3:
                 widget = FormComboWidget(data, comment=comment, parent=self)
             else:
                 widget = FormWidget(data, comment=comment, parent=self)
@@ -926,10 +933,10 @@ class FormDialog(QDialog):
             import xml.etree.ElementTree as ET
 
         # Form
-        if isinstance(data[0][0], (list, tuple)):
+        if isinstance(data, tuple) and len(data[0]) == 3:
             self.formwidget = FormTabWidget(data, comment=comment,
                                             parent=self)
-        elif len(data[0])==3:
+        elif isinstance(data, list) and len(data[0]) == 3:
             self.formwidget = FormComboWidget(data, comment=comment,
                                               parent=self)
         else:
