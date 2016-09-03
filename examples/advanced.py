@@ -82,13 +82,13 @@ print("result:", fedit(datalist, title="Example",
                        result='dict',
                        type='questions',
                        scrollbar=True,
-                       bgd_color='#6c6',
-                       wgt_color='#cf9'))
+                       background_color='#6c6',
+                       widget_color='#cf9'))
 
 #--------- datagroup example
 datagroup = create_datagroup_example()
 print("result:", fedit(datagroup, "Global title", result='JSON',
-                       bgd_color='#000000', wgt_color='#ffff7f'))
+                       background_color='#000000', widget_color='#ffff7f'))
 
 #--------- datagroup inside a datagroup example
 datalist = create_datalist_example()
