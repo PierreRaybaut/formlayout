@@ -370,6 +370,119 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
+class DictTreeModel(QStandardItemModel):
+    def __init__(self, data, header=[], parent=None):
+        QStandardItemModel.__init__(self, parent)
+        self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
+        self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
+        self.columns = False
+        if len(header) > 0:
+            self.setHorizontalHeaderLabels(header)
+        if len(header) > 1:
+            self.columns = True
+        parent = self.invisibleRootItem()
+        self.add(data, parent)
+
+    def add(self, data, parent):
+        if isinstance(data, dict):
+            for key, value in data.items():
+                item = QStandardItem(key)
+                parent.appendRow(item)
+                if self.columns and not isinstance(value, (dict,list)):
+                    item.setIcon(self.ficon)
+                    leaf = QStandardItem(value)
+                    parent.setChild(self.indexFromItem(item).row(), 1, leaf)
+                else:
+                    item.setIcon(self.dicon)
+                    self.add(value, item)
+        elif isinstance(data, list):
+            for el in data:
+                self.add(el, parent)
+        else:
+            item = QStandardItem(data)
+            item.setIcon(self.ficon)
+            parent.appendRow(item)
+
+    def value(self):
+        parent = self.invisibleRootItem()
+        return self.addvalue(parent)
+
+    def addvalue(self, parent):
+        children, ret = [], {}
+        for i in range(parent.rowCount()):
+            child = parent.child(i)
+            if child.hasChildren():
+                key = to_text_string(child.text())
+                ret[key] = self.addvalue(child)
+            else:
+                children.append(to_text_string(child.text()))
+        if ret and not children:
+            return ret
+        elif ret:
+            return children + [ret]
+        elif len(children) == 1:
+            return children[0]
+        else:
+            return children
+
+
+class XMLTreeModel(QStandardItemModel):
+    def __init__(self, xmldata, header=[], parent=None):
+        QStandardItemModel.__init__(self, parent)
+        self.ficon = qApp.style().standardIcon(QStyle.SP_FileIcon)
+        self.dicon = qApp.style().standardIcon(QStyle.SP_DirIcon)
+        self.columns = False
+        if len(header) > 0:
+            self.setHorizontalHeaderLabels(header)
+        if len(header) > 1:
+            self.columns = True
+        parent = self.invisibleRootItem()
+        root = xmldata.getroot()
+        self.add(root, parent)
+
+    def add(self, element, parent):
+        item = QStandardItem(element.tag)
+        item.setIcon(self.dicon)
+        parent.appendRow(item)
+        for key, value in element.attrib.items():
+            itemattrib = QStandardItem(key)
+            item.appendRow(itemattrib)
+            itemleaf = QStandardItem(value)
+            if self.columns:
+                item.setChild(self.indexFromItem(itemattrib).row(), 1,
+                                                                   itemleaf)
+            else:
+                itemattrib.appendRow(itemleaf)
+        if (element.text and not element.text.isspace()) or (
+            element.getchildren() and element[0].tail
+                                  and not element[0].tail.isspace()):
+            text = ET.tostring(element, method='text', encoding='utf-8'
+                                                       ).decode('utf-8')
+            if not element.attrib:
+                itemtext = QStandardItem(text)
+                if self.columns:
+                    item.setIcon(self.ficon)
+                    parent.setChild(self.indexFromItem(item).row(), 1,
+                                                                   itemtext)
+                else:
+                    itemtext.setIcon(self.ficon)
+                    item.appendRow(itemtext)
+            else:
+                itemtext = QStandardItem('TEXT')
+                item.appendRow(itemtext)
+                itemleaf = QStandardItem(text)
+                if self.columns:
+                    itemtext.setIcon(self.ficon)
+                    item.setChild(self.indexFromItem(itemtext).row(), 1,
+                                                                     itemleaf)
+                else:
+                    itemleaf.setIcon(self.ficon)
+                    itemtext.appendRow(itemleaf)
+        else:
+            for el in element:
+                self.add(el, item)
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -527,6 +640,37 @@ class FormWidget(QWidget):
                         lab = QLabel()
                         lab.setPixmap(pixmap)
                         self.formlayout.addRow(lab)
+                    elif value.endswith('.json'):
+                        # JSON file
+                        import json, io
+                        from collections import OrderedDict
+                        jsonfile = io.open(value, 'r', encoding='utf-8')
+                        jsondata = json.load(jsonfile,
+                                             object_pairs_hook=OrderedDict)
+                        if '_' in value:
+                            header = value[:-5].split('_')
+                        else:
+                            header = [value[:-5]]
+                        treemodel = DictTreeModel(jsondata, header)
+                        tree = QTreeView()
+                        tree.setModel(treemodel)
+                        tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                        self.formlayout.addRow(tree)
+                    elif value.endswith('.xml'):
+                        # XML file
+                        global ET
+                        import xml.etree.ElementTree as ET
+                        xmlfile = open(value, 'r')
+                        xmldata = ET.parse(xmlfile)
+                        if '_' in value:
+                            header = value[:-4].split('_')
+                        else:
+                            header = [value[:-4]]
+                        treemodel = XMLTreeModel(xmldata, header)
+                        tree = QTreeView()
+                        tree.setModel(treemodel)
+                        tree.setEditTriggers(QAbstractItemView.NoEditTriggers)
+                        self.formlayout.addRow(tree)
                     else:
                         # Comment
                         self.formlayout.addRow(QLabel(value))
@@ -580,6 +724,11 @@ class FormWidget(QWidget):
                     field.setCurrentIndex(selindex)
                 elif isinstance(save_value, tuple):
                     field = RadioLayout(value, selindex, self)
+            elif isinstance(value, dict):
+                treemodel = DictTreeModel(value)
+                field = QTreeView()
+                field.header().hide()
+                field.setModel(treemodel)
             elif isinstance(value, bool):
                 field = QCheckBox(self)
                 field.setChecked(value)
@@ -694,6 +843,8 @@ class FormWidget(QWidget):
                     value = value[index+1]
                     if isinstance(value, (list, tuple)):
                         value = value[0]
+            elif isinstance(value, dict):
+                value = field.model().value()
             elif isinstance(value, bool):
                 value = field.checkState() == Qt.Checked
             elif isinstance(value, float):
