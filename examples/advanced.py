@@ -30,6 +30,7 @@ def create_datalist_example():
                                             # Example: shopping list of selected items
                                             # (3 jeans, 11 T-shirts, ...)
             ('tuple *', (0, '1', '3', '4')),
+            ('bool list', ['0b110', '1', '3', '4']),
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
                        ('-.', 'DashDot'), ('-', 'Solid'),
                        ('steps', 'Steps'), (':', 'Dotted')]),
