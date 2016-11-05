@@ -43,6 +43,7 @@ def create_datalist_example():
             ('font', ('Arial', 10, False, True)),
             ('color', '#123409'),
             ('bool', True),
+            ('calendar with grid', 'calendarM:1980,12,31:1982,1,1:@1981,9,20'),
             ('date', datetime.date(2010, 10, 10)),
             ('time', datetime.time(12, 30)),
             ('datetime', datetime.datetime(2010, 10, 10)),

@@ -595,6 +595,29 @@ class FormWidget(QWidget):
                 elif value == 'password':
                     field = QLineEdit(self)
                     field.setEchoMode(QLineEdit.Password)
+                elif value in ['calendar', 'calendarM'] \
+                           or value.startswith(('calendar:', 'calendarM:')) \
+                           or value.startswith(('calendar@', 'calendarM@')):
+                    index = value.find('@')
+                    if index != -1:
+                        value, date = value[:index], value[index+1:]
+                    else:
+                        date = False
+                    field = QCalendarWidget(self)
+                    field.setVerticalHeaderFormat(field.NoVerticalHeader)
+                    parsed = value.split(':')
+                    if parsed[-1] == '':
+                        field.setGridVisible(True)
+                        parsed.pop(-1)
+                    if parsed[0] == 'calendarM':
+                        field.setFirstDayOfWeek(Qt.Monday)
+                    if len(parsed) == 2:
+                        field.setMaximumDate(datetime.date(*eval(parsed[1])))
+                    elif len(parsed) == 3:
+                        field.setMinimumDate(datetime.date(*eval(parsed[1])))
+                        field.setMaximumDate(datetime.date(*eval(parsed[2])))
+                    if date:
+                        field.setSelectedDate(datetime.date(*eval(date)))
                 elif '\n' in value:
                     if value == '\n':
                         value = ''
@@ -753,6 +776,12 @@ class FormWidget(QWidget):
                                            ).replace(u("\u2029"), os.linesep)
                 elif isinstance(field, SliderLayout):
                     value = field.value()
+                elif isinstance(field, QCalendarWidget):
+                    value = field.selectedDate()
+                    try:
+                        value = value.toPyDate()  # PyQt
+                    except AttributeError:
+                        value = value.toPython()  # PySide
                 else:
                     value = to_text_string(field.text())
             elif isinstance(field, CheckLayout):
