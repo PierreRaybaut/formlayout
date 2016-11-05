@@ -454,26 +454,30 @@ def is_float_valid(edit):
     state = edit.validator().validate(text, 0)[0]
     return state == QDoubleValidator.Acceptable
 
-def is_required_valid(edit):
-    bgd_color = "background-color:rgb(255, 175, 90);"
+def is_required_valid(edit, widget_color):
+    required_color = "background-color:rgb(255, 175, 90);"
+    if widget_color:
+        widget_color = "background-color:" + widget_color + ";"
+    else:
+        widget_color = ""
     if isinstance(edit, (QLineEdit, FileLayout)):
         if edit.text():
-            edit.setStyleSheet("")
+            edit.setStyleSheet(widget_color)
             return True
         else:
-            edit.setStyleSheet(bgd_color)
+            edit.setStyleSheet(required_color)
     elif isinstance(edit, (QComboBox, RadioLayout)):
         if edit.currentIndex() != -1:
-            edit.setStyleSheet("")
+            edit.setStyleSheet(widget_color)
             return True
         else:
-            edit.setStyleSheet(bgd_color)
+            edit.setStyleSheet(required_color)
     elif isinstance(edit, QTextEdit):
         if edit.toPlainText():
-            edit.setStyleSheet("")
+            edit.setStyleSheet(widget_color)
             return True
         else:
-            edit.setStyleSheet(bgd_color)
+            edit.setStyleSheet(required_color)
     return False
 
 class FormWidget(QWidget):
@@ -483,6 +487,7 @@ class FormWidget(QWidget):
         self.data = deepcopy(data)
         self.result = parent.result
         self.type = parent.type
+        self.widget_color = parent.widget_color
         self.widgets = []
         self.formlayout = QFormLayout(self)
         if comment:
@@ -661,6 +666,11 @@ class FormWidget(QWidget):
                         self.connect(field.group, SIGNAL('buttonClicked(int)'),
                                      dialog.required_valid)
 
+            # Eventually setting the widget_color
+            if self.widget_color:
+                style = "background-color:" + self.widget_color + ";"
+                field.setStyleSheet(style)
+
             if self.type == 'form':
                 self.formlayout.addRow(label, field)
             elif self.type == 'questions':
@@ -784,6 +794,10 @@ class FormComboWidget(QWidget):
                          self.stackwidget, SLOT("setCurrentIndex(int)"))
 
         self.result = parent.result 
+        self.widget_color = parent.widget_color
+        if self.widget_color:
+            style = "background-color:" + self.widget_color + ";"
+            self.combobox.setStyleSheet(style)
         self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
@@ -838,6 +852,7 @@ class FormTabWidget(QWidget):
         layout.addWidget(self.tabwidget)
         self.setLayout(layout)
         self.result = parent.result
+        self.widget_color = parent.widget_color
         self.type = parent.type
         self.widgetlist = []
         for data, title, comment in datalist:
@@ -891,7 +906,8 @@ class FormDialog(QDialog):
     """Form Dialog"""
     def __init__(self, data, title="", comment="", icon=None, parent=None,
                  apply=None, ok=None, cancel=None, result=None, outfile=None,
-                 type=None, scrollbar=None):
+                 type=None, scrollbar=None, background_color=None,
+                 widget_color=None):
         QDialog.__init__(self, parent)
         
         # Destroying the C++ object right after closing the dialog box,
@@ -924,6 +940,11 @@ class FormDialog(QDialog):
         elif self.result == 'XML':
             global ET
             import xml.etree.ElementTree as ET
+
+        self.widget_color = widget_color
+        if background_color:
+            style = "FormDialog {background-color:" + background_color + ";}"
+            self.setStyleSheet(style)
 
         # Form
         if isinstance(data[0][0], (list, tuple)):
@@ -1009,7 +1030,7 @@ class FormDialog(QDialog):
     def required_valid(self):
         valid = True
         for field in self.required_fields:
-            if not is_required_valid(field):
+            if not is_required_valid(field, self.widget_color):
                 valid = False
         self.update_buttons(valid)
 
@@ -1071,7 +1092,7 @@ class FormDialog(QDialog):
 
 def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
           ok=True, cancel=True, result='list', outfile=None, type='form',
-          scrollbar=False):
+          scrollbar=False, background_color=None, widget_color=None):
     """
     Create form dialog and return result
     (if Cancel button is pressed, return None)
@@ -1090,6 +1111,8 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
     :param str outfile: write result to the file outfile.[py|json|xml]
     :param str type: layout type ('form' or 'questions')
     :param bool scrollbar: vertical scrollbar
+    :param str background_color: color of the background
+    :param str widget_color: color of the widgets
 
     :return: Serialized result (data type depends on `result` parameter)
     
@@ -1139,8 +1162,9 @@ def fedit(data, title="", comment="", icon=None, parent=None, apply=None,
               (type, ', '.join(layouts)), file=sys.stderr)
         type = 'form'
 
-    dialog = FormDialog(data, title, comment, icon, parent,
-                        apply, ok, cancel, result, outfile, type, scrollbar)
+    dialog = FormDialog(data, title, comment, icon, parent, apply, ok, cancel,
+                        result, outfile, type, scrollbar, background_color,
+                        widget_color)
     if dialog.exec_():
         return dialog.get()
 

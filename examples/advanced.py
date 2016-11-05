@@ -81,11 +81,14 @@ print("result:", fedit(datalist, title="Example",
                        cancel='Custom &Cancel button',
                        result='dict',
                        type='questions',
-                       scrollbar=True))
+                       scrollbar=True,
+                       background_color='#6c6',
+                       widget_color='#cf9'))
 
 #--------- datagroup example
 datagroup = create_datagroup_example()
-print("result:", fedit(datagroup, "Global title", result='JSON'))
+print("result:", fedit(datagroup, "Global title", result='JSON',
+                       background_color='#000000', widget_color='#ffff7f'))
 
 #--------- datagroup inside a datagroup example
 datalist = create_datalist_example()
