@@ -370,6 +370,30 @@ class PushLayout(QHBoxLayout):
                      self.dialog.formwidget.get_widgets())
 
 
+class CountLayout(QHBoxLayout):
+    """Field with a QSpinBox"""
+    def __init__(self, field, parent=None):
+        QHBoxLayout.__init__(self)
+        self.field = field
+        self.count = QSpinBox()
+        self.count.setFixedWidth(45)
+        self.addWidget(self.field)
+        self.addWidget(self.count)
+
+    def text(self):
+        return self.field.text()
+
+    def currentIndex(self):
+        return self.field.currentIndex()
+
+    def n(self):
+        return self.count.value()
+
+    def setStyleSheet(self, style):
+        self.field.setStyleSheet(style)
+        self.count.setStyleSheet(style)
+
+
 def font_is_installed(font):
     """Check if font is installed"""
     return [fam for fam in QFontDatabase().families()
@@ -613,7 +637,17 @@ class FormWidget(QWidget):
                 field.setTime(value)
             else:
                 field = QLineEdit(repr(value), self)
-            
+
+            # Eventually catching the 'countfield' feature and processing it
+            if label.startswith('n '):
+                label = label[2:]
+                if isinstance(field, QLineEdit) and is_text_string(value) or\
+                   isinstance(field, QComboBox):
+                    field = CountLayout(field)
+                else:
+                    print("Warning: '%s' doesn't support 'nfield' feature"\
+                          % label, file=STDERR)
+
             # Eventually extracting tooltip from label and processing it
             index = label.find('::')
             if index != -1:
@@ -685,7 +719,9 @@ class FormWidget(QWidget):
             if label is None:
                 # Separator / Comment
                 continue
-            elif tuple_to_qfont(value) is not None:
+            if label.startswith('n '):
+                label = label[2:]
+            if tuple_to_qfont(value) is not None:
                 value = field.get_font()
             elif is_text_string(value):
                 if isinstance(field, QTextEdit):
@@ -730,6 +766,8 @@ class FormWidget(QWidget):
                     value = value.toPython()  # PySide
             else:
                 value = eval(str(field.text()))
+            if isinstance(field, CountLayout):
+                value = (value, field.n())
             valuelist.append((label, value))
         if self.result == 'list':
             return [value for label, value in valuelist]
@@ -764,10 +802,14 @@ class FormWidget(QWidget):
                     label = label[:-2]
                     required = 'true'
                 child = ET.SubElement(form, label)
-                if isinstance(value, datetime.datetime):
-                    child.text = value.isoformat()
+                if isinstance(value, tuple):
+                    child.text = to_text_string(value[0])
+                    child.attrib['amount'] = to_text_string(value[1])
                 else:
-                    child.text = to_text_string(value)
+                    if isinstance(value, datetime.datetime):
+                        child.text = value.isoformat()
+                    else:
+                        child.text = to_text_string(value)
                 child.attrib['tooltip'] = tooltip
                 child.attrib['required'] = required
             return ET.tostring(form)
