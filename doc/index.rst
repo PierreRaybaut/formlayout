@@ -22,6 +22,7 @@ Contents:
     
     overview
     installation
+    widgets
     examples/index
     reference/index
     
