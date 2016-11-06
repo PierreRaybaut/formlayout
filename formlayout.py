@@ -553,6 +553,9 @@ class FormWidget(QWidget):
         return dialog
 
     def setup(self):
+        global img_fmt
+        img_fmt = tuple(['.'+str(bytes(ext).decode()) for ext
+                     in QImageReader.supportedImageFormats()])
         for label, value in self.data:
             if DEBUG_FORMLAYOUT:
                 print("value:", value)
@@ -569,8 +572,6 @@ class FormWidget(QWidget):
                     field = PushLayout(value, self)
                     self.formlayout.addRow(field)
                 else:
-                    img_fmt = tuple(['.'+str(bytes(ext).decode()) for ext 
-                                 in QImageReader.supportedImageFormats()])
                     if value.endswith(img_fmt):
                         # Image
                         pixmap = QPixmap(value)
@@ -752,10 +753,16 @@ class FormWidget(QWidget):
                 style = "background-color:" + self.widget_color + ";"
                 field.setStyleSheet(style)
 
+            if label.endswith(img_fmt):
+                pixmap = QPixmap(label)
+                label = QLabel()
+                label.setPixmap(pixmap)
+            else:
+                label = QLabel(label)
             if self.type == 'form':
                 self.formlayout.addRow(label, field)
             elif self.type == 'questions':
-                self.formlayout.addRow(QLabel(label))
+                self.formlayout.addRow(label)
                 self.formlayout.addRow(field)
             self.widgets.append(field)
             
@@ -856,7 +863,12 @@ class FormWidget(QWidget):
                 if label.endswith(' *'):
                     label = label[:-2]
                     required = 'true'
-                child = ET.SubElement(form, label)
+                if label.endswith(img_fmt):
+                    rdot = label.rfind('.')
+                    child = ET.SubElement(form, label[:rdot])
+                    child.attrib['format'] = label[rdot+1:]
+                else:
+                    child = ET.SubElement(form, label)
                 if isinstance(value, tuple):
                     child.text = to_text_string(value[0])
                     child.attrib['amount'] = to_text_string(value[1])
