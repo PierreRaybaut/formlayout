@@ -2,6 +2,33 @@
 Widgets
 =======
 
+Separator
+=========
+
+The label and the value must be ``None``.
+
+label: ``None``
+value: ``None``
+
+.. image:: /images/separator.png
+
+Text
+====
+
+The label must be ``None`` and the value can be any string.
+
+label: ``None``
+value: ``Some text``
+
+.. image:: /images/text.png
+
+The text can be formatted.
+
+label: ``None``
+value: ``Some <b><font color="red">red bold</font></b> text``
+
+.. image:: /images/text_red_bold.png
+
 Line edit
 =========
 
