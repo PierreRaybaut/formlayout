@@ -186,3 +186,38 @@ label: ``'Fruit'``
 value: ``[2, 'Apple', 'Orange', 'Banana']``
 
 .. image:: /images/combobox_default.png
+
+Date and time
+=============
+
+You must use the ``datetime`` module of the Python's standard library.
+
+Date
+----
+
+The value must be a ``datetime.date`` object.
+
+label: ``'date'``
+value: ``datetime.date(2010, 10, 10)``
+
+.. image:: /images/date.png
+
+Time
+----
+
+The value must be a ``datetime.time`` object.
+
+label: ``'time'``
+value: ``datetime.time(12, 30)``
+
+.. image:: /images/time.png
+
+Datetime
+--------
+
+The value must be a ``datetime.datetime`` object.
+
+label: ``'datetime'``
+value: ``datetime.datetime(2010, 10, 10, 12, 30)``
+
+.. image:: /images/datetime.png
