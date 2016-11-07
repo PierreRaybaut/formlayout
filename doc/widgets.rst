@@ -90,3 +90,56 @@ label: ``'Name'``
 value: ``'This is why\n'``
 
 .. image:: /images/text_edit_default.png
+
+Checkbox
+========
+
+Single checkbox
+---------------
+
+The value must be ``True`` or ``False``.
+
+label: ``'False'``
+value: ``False``
+
+.. image:: /images/checkbox_false.png
+
+label: ``'True'``
+value: ``True``
+
+.. image:: /images/checkbox_true.png
+
+Multiple checkbox
+-----------------
+
+The value must be a list or a tuple of strings whose the first element is a bit string.
+
+label: ``'Fruits'``
+value: ``['0b101', 'Apple', 'Orange', 'Banana']``
+
+.. image:: /images/checkbox_multiple.png
+
+Radio buttons
+=============
+
+The value must be a tuple of strings whose the first element is an integer.
+
+Empty radio buttons
+-------------------
+
+The index must be ``0``.
+
+label: ``'Fruit'``
+value: ``(0, 'Apple', 'Orange', 'Banana')``
+
+.. image:: /images/radio_buttons_empty.png
+
+Radio buttons with default choice
+---------------------------------
+
+The index must be the one of the chosen item.
+
+label: ``'Fruit'``
+value: ``(2, 'Apple', 'Orange', 'Banana')``
+
+.. image:: /images/radio_buttons_default.png
