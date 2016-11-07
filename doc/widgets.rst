@@ -29,6 +29,24 @@ value: ``Some <b><font color="red">red bold</font></b> text``
 
 .. image:: /images/text_red_bold.png
 
+Push button
+===========
+
+The label must be ``None`` and the value a list or a tuple of binomials.
+The first element is the button label, the second is the callback function.
+
+label: ``None``
+value: ``[('Push !', push_function)]``
+
+.. image:: /images/push_button.png
+
+The ``&`` char can be used to specify a keyboard shortcut.
+
+label: ``None``
+value: ``[('fi&rst', first_function), ('s&econd', second_function)]``
+
+.. image:: /images/push_button_multiple.png
+
 Line edit
 =========
 
@@ -143,3 +161,28 @@ label: ``'Fruit'``
 value: ``(2, 'Apple', 'Orange', 'Banana')``
 
 .. image:: /images/radio_buttons_default.png
+
+Combobox
+========
+
+The value must be a list of strings whose the first element is an integer.
+
+Empty combobox
+--------------
+
+The index must be ``0``.
+
+label: ``'Fruit'``
+value: ``[0, 'Apple', 'Orange', 'Banana']``
+
+.. image:: /images/combobox_empty.png
+
+Combobox with default choice
+----------------------------
+
+The index must be the one of the chosen item.
+
+label: ``'Fruit'``
+value: ``[2, 'Apple', 'Orange', 'Banana']``
+
+.. image:: /images/combobox_default.png
