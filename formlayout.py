@@ -339,10 +339,31 @@ class RadioLayout(QVBoxLayout):
             btn.setStyleSheet(style)
 
 
-class CheckLayout(QVBoxLayout):
-    """Check boxes layout with QButtonGroup"""
+class CheckVLayout(QVBoxLayout):
+    """Check boxes vlayout with QButtonGroup"""
     def __init__(self, boxes, checks, parent=None):
         QVBoxLayout.__init__(self)
+        self.setSpacing(0)
+        self.group = QButtonGroup()
+        self.group.setExclusive(False)
+        for i, (box, check) in enumerate(zip(boxes, checks)):
+            cbx = QCheckBox(box)
+            cbx.setChecked(eval(check))
+            self.addWidget(cbx)
+            self.group.addButton(cbx, i)
+
+    def values(self):
+        return [cbx.isChecked() for cbx in self.group.buttons()]
+
+    def setStyleSheet(self, style):
+        for cbx in self.group.buttons():
+            cbx.setStyleSheet(style)
+
+
+class CheckHLayout(QHBoxLayout):
+    """Check boxes hlayout with QButtonGroup"""
+    def __init__(self, boxes, checks, parent=None):
+        QHBoxLayout.__init__(self)
         self.setSpacing(0)
         self.group = QButtonGroup()
         self.group.setExclusive(False)
@@ -628,8 +649,12 @@ class FormWidget(QWidget):
                 else:
                     field = QLineEdit(value, self)
             elif isinstance(value, (list, tuple)) and is_text_string(value[0])\
-                                                 and value[0].startswith('0b'):
-                field = CheckLayout(value[1:], value[0][2:], self)
+                                               and (value[0].startswith('0v')
+                                                 or value[0].startswith('0h')):
+                if value[0][1] == 'v':
+                    field = CheckVLayout(value[1:], value[0][2:], self)
+                elif value[0][1] == 'h':
+                    field = CheckHLayout(value[1:], value[0][2:], self)
             elif isinstance(value, (list, tuple)):
                 save_value = value
                 value = list(value)  # always needed to protect self.data
@@ -784,7 +809,7 @@ class FormWidget(QWidget):
                         value = value.toPython()  # PySide
                 else:
                     value = to_text_string(field.text())
-            elif isinstance(field, CheckLayout):
+            elif isinstance(field, (CheckVLayout, CheckHLayout)):
                 value = field.values()
             elif isinstance(value, (list, tuple)):
                 index = int(field.currentIndex())
