@@ -650,11 +650,17 @@ class FormWidget(QWidget):
                     field = QLineEdit(value, self)
             elif isinstance(value, (list, tuple)) and is_text_string(value[0])\
                                                and (value[0].startswith('0v')
-                                                 or value[0].startswith('0h')):
+                                                 or value[0].startswith('0h')
+                                                 or value[0].startswith('1v')
+                                                 or value[0].startswith('1h')):
+                if value[0][2:]:
+                    binary = value[0][2:]
+                else:
+                    binary = value[0][0] * len(value[1:])
                 if value[0][1] == 'v':
-                    field = CheckVLayout(value[1:], value[0][2:], self)
+                    field = CheckVLayout(value[1:], binary, self)
                 elif value[0][1] == 'h':
-                    field = CheckHLayout(value[1:], value[0][2:], self)
+                    field = CheckHLayout(value[1:], binary, self)
             elif isinstance(value, (list, tuple)):
                 save_value = value
                 value = list(value)  # always needed to protect self.data

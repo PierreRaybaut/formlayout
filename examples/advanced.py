@@ -30,8 +30,13 @@ def create_datalist_example():
                                             # Example: shopping list of selected items
                                             # (3 jeans, 11 T-shirts, ...)
             ('tuple *', (0, '1', '3', '4')),
-            ('bool vlist', ['0v110', '1', '3', '4']),
-            ('bool hlist', ['0h110', '1', '3', '4']),
+            ('bool vertical list', ['0v110', '1', '3', '4']),
+                          # The binary string after the 'v' codes the checkboxes state
+            ('bool vlist unchecked', ['0v', '1', '3', '4']),
+                          # No binary string and a '0', all checkboxes unchecked
+            ('bool vlist checked', ['1v', '1', '3', '4']),
+                          # No binary string and a '1', all checkboxes checked
+            ('bool horizontal list', ['0h110', '1', '3', '4']), # Horizontal with 'h'
             ('list2', ['--', ('none', 'None'), ('--', 'Dashed'),
                        ('-.', 'DashDot'), ('-', 'Solid'),
                        ('steps', 'Steps'), (':', 'Dotted')]),
