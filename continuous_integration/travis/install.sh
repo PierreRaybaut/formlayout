@@ -31,7 +31,7 @@ install_conda()
     source activate test-environment
 
     if [ "$USE_QT_API" = "PyQt5" ]; then
-        conda install -c inso pyqt5
+        conda install -c anaconda pyqt
         export QT_API=pyqt5;
     elif [ "$USE_QT_API" = "PyQt4" ]; then
         conda install pyqt;
