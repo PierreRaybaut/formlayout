@@ -49,7 +49,7 @@ STDERR = sys.stderr
 
 # ---+- PyQt-PySide compatibility -+----
 _modname = os.environ.setdefault('QT_API', 'pyqt')
-assert _modname in ('pyqt', 'pyqt5', 'pyside')
+assert _modname in ('pyqt', 'pyqt5', 'pyside', 'pyside2')
 
 if os.environ['QT_API'].startswith('pyqt'):
     try:
@@ -63,13 +63,18 @@ if os.environ['QT_API'].startswith('pyqt'):
         try:
             import PySide  # analysis:ignore
         except ImportError:
-            raise ImportError("formlayout requires PyQt4, PyQt5 or PySide")
+            # Switching to PySide2
+            os.environ['QT_API'] = _modname = 'pyside2'
+            try:
+                import PySide2  # analysis:ignore
+            except ImportError:
+                raise ImportError("formlayout requires PyQt4, PyQt5, PySide or PySide2")
 
 if os.environ['QT_API'] == 'pyqt':
     try:
         from PyQt4.QtGui import QFormLayout
     except ImportError:
-        raise ImportError("formlayout requires PyQt4, PyQt5 or PySide")
+        raise ImportError("formlayout requires PyQt4, PyQt5, PySide or PySide2")
     from PyQt4.QtGui import *  # analysis:ignore
     from PyQt4.QtCore import *  # analysis:ignore
     from PyQt4.QtCore import pyqtSlot as Slot
@@ -90,6 +95,12 @@ if os.environ['QT_API'] == 'pyside':
     from PySide.QtGui import *  # analysis:ignore
     from PySide.QtCore import *  # analysis:ignore
     QT_LIB = 'PySide'
+    
+if os.environ['QT_API'] == 'pyside2':
+    from PySide2.QtGui import *  # analysis:ignore
+    from PySide2.QtCore import *  # analysis:ignore
+    from PySide2.QtWidgets import *  # analysis:ignore
+    QT_LIB = 'PySide2'
 
 
 # ---+- Python 2-3 compatibility -+----
@@ -158,10 +169,18 @@ class ColorButton(QPushButton):
     if SIGNAL is None:
         colorChanged = Signal("QColor")
     
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, colorChanged_slot=None):
         QPushButton.__init__(self, parent)
         self.setFixedSize(20, 20)
         self.setIconSize(QSize(12, 12))
+        
+        if colorChanged_slot:
+            if SIGNAL is None:
+                self.colorChanged.connect(colorChanged_slot)
+            else:
+                self.connect(self, SIGNAL("colorChanged(QColor)"),
+                             colorChanged_slot)
+        
         if SIGNAL is None:
             self.clicked.connect(self.choose_color)
         else:
@@ -224,13 +243,9 @@ class ColorLayout(QHBoxLayout):
             self.connect(self.lineedit, SIGNAL("textChanged(QString)"),
                          self.update_color)
         self.addWidget(self.lineedit)
-        self.colorbtn = ColorButton(parent)
+        self.colorbtn = ColorButton(parent, self.update_text)
         self.colorbtn.color = color
-        if SIGNAL is None:
-            self.colorbtn.colorChanged.connect(self.update_text)
-        else:
-            self.connect(self.colorbtn, SIGNAL("colorChanged(QColor)"),
-                         self.update_text)
+        
         self.addWidget(self.colorbtn)
 
     def update_color(self, text):
@@ -569,8 +584,8 @@ class FormWidget(QWidget):
                     field = PushLayout(value, self)
                     self.formlayout.addRow(field)
                 else:
-                    img_fmt = tuple(['.'+str(bytes(ext).decode()) for ext 
-                                 in QImageReader.supportedImageFormats()])
+                    img_fmt = tuple(['.'+str(bytes(ext.data() if QT_LIB == "PySide" or QT_LIB == "PySide2" else ext).decode()) 
+                                    for ext in QImageReader.supportedImageFormats()])
                     if value.endswith(img_fmt):
                         # Image
                         pixmap = QPixmap(value)
