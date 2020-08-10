@@ -35,7 +35,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 
 from __future__ import print_function
 
-__version__ = '2.0.0alpha'
+__version__ = '1.2.0'
 __license__ = __doc__
 
 DEBUG_FORMLAYOUT = False
@@ -48,8 +48,16 @@ STDERR = sys.stderr
 
 
 # ---+- PyQt-PySide compatibility -+----
-_modname = os.environ.setdefault('QT_API', 'pyqt')
-assert _modname in ('pyqt', 'pyqt5', 'pyside')
+if os.environ.get('QT_API') is None:
+    try:
+        import PyQt5  # analysis:ignore
+        os.environ['QT_API'] = 'pyqt5'
+    except ImportError:
+        try:
+            import PyQt4  # analysis:ignore
+            os.environ['QT_API'] = 'pyqt'
+        except ImportError:
+            os.environ['QT_API'] = 'pyside'
 
 if os.environ['QT_API'].startswith('pyqt'):
     try:
@@ -59,7 +67,7 @@ if os.environ['QT_API'].startswith('pyqt'):
             import PyQt4  # analysis:ignore
     except ImportError:
         # Switching to PySide
-        os.environ['QT_API'] = _modname = 'pyside'
+        os.environ['QT_API'] = 'pyside'
         try:
             import PySide  # analysis:ignore
         except ImportError:
