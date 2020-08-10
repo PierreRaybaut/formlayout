@@ -1,16 +1,12 @@
 # formlayout Releases #
 
-### Version 2.0.0 ###
+### Version 1.2.0 ###
 
 New features:
 
-* Xxx
-* Xxx
-
-Bug fixes:
-
-* Xxx
-* Xxx
+* Added a lot of new undocumented features (...)
+* Moved documentation to readthedocs.io
+* Added PyQt4/PyQt5/PySide automatic switch depending on installed libraries
 
 ### Version 1.1.0 ###
 
