@@ -6,16 +6,16 @@ Python module providing the most easy way to create Qt form dialogs and widgets
 [![PyPI status](https://img.shields.io/pypi/status/formlayout.svg)](https://github.com/PierreRaybaut/formlayout)
 [![PyPI pyversions](https://img.shields.io/pypi/pyversions/formlayout.svg)](https://pypi.python.org/pypi/formlayout/)
 
-<img src="https://pythonhosted.org/formlayout/_images/advanced1.png">
-<img src="https://pythonhosted.org/formlayout/_images/advanced2.png">
-<img src="https://pythonhosted.org/formlayout/_images/advanced3.png">
+<img src="https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/advanced1.png">
+<img src="https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/advanced2.png">
+<img src="https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/advanced3.png">
 
 With ``formlayout``, generating a form is very easy:
   * To show a dialog box, just call the ``fedit`` function.
   * To set-up the form dialog, simply use lists to pass parameters (field names, default values, ...).
   * To embedd ``formlayout`` in your own library, just copy the ``formlayout`` autoconsistent single script (*zero dependency*, except Qt itself).
 
-See [documentation](http://pythonhosted.org/formlayout/) for more details 
+See [documentation](https://formlayout.readthedocs.io/en/latest/) for more details 
 (mostly examples) on the library and [changelog](CHANGELOG.md) for recent 
 history of changes.
 
@@ -50,7 +50,7 @@ datalist = [('Name', 'Paul'),
 fedit(datalist, title="Describe yourself", comment="This is just an <b>example</b>.")
 ```
 
-<img src="https://pythonhosted.org/formlayout/_images/simple.png">
+<img src="https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/simple.png">
 
 
 ## Installation
