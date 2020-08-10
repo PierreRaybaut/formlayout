@@ -39,9 +39,9 @@ setup(name = LIBNAME,
       version = version,
       description = 'The most easy way to create Qt form dialogs and widgets with Python',
       long_description = """\
-.. image:: https://pythonhosted.org/formlayout/_images/advanced1.png
-.. image:: https://pythonhosted.org/formlayout/_images/advanced2.png
-.. image:: https://pythonhosted.org/formlayout/_images/advanced3.png
+.. image:: https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/advanced1.png
+.. image:: https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/advanced2.png
+.. image:: https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/advanced3.png
 
 With ``formlayout``, generating a form is very easy:
   * To show a dialog box, just call the ``fedit`` function.
@@ -64,7 +64,7 @@ Here is a simple example (more are included in source package)::
 
 This shows the following dialog box:
 
-.. image:: https://pythonhosted.org/formlayout/_images/simple.png
+.. image:: https://raw.githubusercontent.com/PierreRaybaut/formlayout/master/doc/images/simple.png
 """,
       author = "Pierre Raybaut",
       author_email = 'pierre.raybaut@gmail.com',
@@ -82,7 +82,6 @@ This shows the following dialog box:
         'Operating System :: OS Independent',
         'Operating System :: POSIX',
         'Operating System :: Unix',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         ],
