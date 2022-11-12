@@ -679,7 +679,7 @@ class FormWidget(QWidget):
                                  dialog.float_valid)
             elif isinstance(value, int):
                 field = QSpinBox(self)
-                field.setRange(-1e9, 1e9)
+                field.setRange(int(-1e9), int(1e9))
                 field.setValue(value)
             elif isinstance(value, datetime.datetime):
                 field = QDateTimeEdit(self)
